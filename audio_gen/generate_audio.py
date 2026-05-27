@@ -24,7 +24,7 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 
 # ============ Configuration ============
 API_KEY = os.environ.get("MIMO_API_KEY", "")
-BASE_URL = os.environ.get("MIMO_BASE_URL", "https://api.xiaomimimo.com/v1")
+BASE_URL = os.environ.get("MIMO_API_URL", "https://token-plan-cn.xiaomimimo.com/v1/chat/completions")
 MODEL = "mimo-v2.5-tts-voicedesign"
 AUDIO_FORMAT = "wav"
 MAX_RETRIES = 3
