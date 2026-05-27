@@ -1202,6 +1202,50 @@ Don't forget.
   >
   > **(Triggers side quest: Aunt Zhang's Envelope)**
 
+  ---
+
+  **（在 B/C 选择之后触发的额外对话：张阿姨的独白）**
+
+  *（无论选择 B 或 C，触发信封支线后，张阿姨会额外说一段话）*
+
+  > "你可能在想，我为什么愿意帮一个老头子守了二十多年的秘密。"
+  >
+  > "1989 年的时候，我丈夫生了一场大病。那时候医疗费要三万多块，
+  > 我们家拿不出来。我到处借钱，没有人愿意帮我。"
+  >
+  > "是你外公。他二话不说，把积蓄拿了出来，借给了我。
+  > 我说写借条，他说不用。
+  > 他说：'张姐，邻居之间不用这么客气。以后你帮我看着这间房子就行。'"
+  >
+  > "后来我丈夫还是走了。但那笔钱，我省吃俭用，花了五年才还清。
+  > 你外公收了钱，但转头就给我家孩子包了个红包。"
+  >
+  > "所以当他凌晨来找我，把那个信封交给我的时候，
+  > 我没有问里面是什么。我只知道——
+  > 这个人值得我为他做任何事。"
+
+  **English:**
+
+  > "You might be wondering why I was willing to keep an old man's
+  > secret for over twenty years."
+  >
+  > "In 1989, my husband fell very ill. The medical bills were over
+  > thirty thousand yuan — more than we could afford. I went everywhere
+  > asking for help. No one was willing."
+  >
+  > "It was your grandpa. Without a second thought, he took out his
+  > savings and lent them to me. I offered to write an IOU, but he
+  > said no. He said: 'Sister Zhang, neighbors don't need to be so
+  > formal. Just watch over my house for me.'"
+  >
+  > "My husband passed away eventually. But I saved every penny and
+  > spent five years paying back that debt. Your grandpa took the
+  > money, but turned around and gave my child a red envelope."
+  >
+  > "So when he came to me at three in the morning with that envelope,
+  > I didn't ask what was inside. I only knew — this is someone I
+  > would do anything for."
+
 - **C. "我想问您一件事——外公有没有留信给您？"**
   > "……你怎么知道的？
   >
@@ -1381,6 +1425,83 @@ Old Neighbor
 
 ---
 
+### 5.1b 环境事件：深夜异响（第一通电话后）
+
+**场景：** 第二章，第一通电话之后
+**触发条件：** 第一通电话结束后的当晚
+
+*（画面变暗，CRT 屏幕的微光照亮阁楼。窗外是深夜。）*
+
+**事件一：窗外的影子**
+
+> 凌晨两点。我睡不着，坐在电脑前整理今天的发现。
+>
+> 窗外忽然闪过一道光——像是手电筒的光束，扫过窗户后消失了。
+>
+> 我站起来，走到窗边。对面张阿姨家的灯已经灭了。
+> 街道上空无一人。
+>
+> 但路边停着一辆黑色的轿车。我之前没注意到。
+> 车里有人吗？我看不到。
+
+**笔记本更新：**
+> 凌晨两点，窗外有手电筒的光闪过。
+> 街道上停着一辆黑色轿车，之前没见过。
+>
+> 是李德胜的人？还是我多想了？
+>
+> 不管怎样，我把窗帘拉上了。
+
+---
+
+**事件二：被翻动的抽屉**
+
+> 第二天早上，我下楼去买早餐。
+> 回来时发现——
+>
+> 书桌的抽屉微微开着。我记得昨天关好了。
+>
+> 里面的东西没有少，但是……软盘的位置变了。
+> DISK_01 从抽屉左边移到了右边。
+>
+> 有人进来过？
+> 我检查了门锁——没有被撬的痕迹。
+>
+> 但是窗户的插销……好像没有扣紧。
+
+**笔记本更新：**
+> 有人翻过我的抽屉。
+> 软盘被移动了，但没有被拿走。
+>
+> 他知道我在找什么，但不知道具体是哪些文件。
+> 他在确认我有没有找到关键证据。
+>
+> 我必须更小心了。从今天起，每次离开房间都要拍照记录物品位置。
+
+**English:**
+
+> 2 AM. I can't sleep, sitting at the computer organizing today's findings.
+>
+> Suddenly a light flashes outside the window — like a flashlight beam, sweeping across the window and disappearing.
+>
+> I stand up and walk to the window. Aunt Zhang's lights across the street are already off. The street is empty.
+>
+> But there's a black sedan parked on the road that I didn't notice before. Is someone in the car? I can't tell.
+
+**Notebook update:**
+> 2 AM — flashlight beam outside the window. A black sedan on the street that wasn't there before.
+> Is it Li Desheng's people? Or am I imagining things?
+> Either way, I pulled the curtains shut.
+
+---
+
+**Notebook update:**
+> Someone went through my drawers. The floppy disks were moved but not taken.
+> He knows what I'm looking for, but not which specific files.
+> I need to be more careful. Photograph the room's item positions every time I leave.
+
+---
+
 ### 5.2 第二次来电（第三章，硬盘修复后）
 
 **场景：** 第三章
@@ -1427,6 +1548,102 @@ Old Neighbor
 > "Are you sure you're ready for this?"
 >
 > *(Phone hangs up)*
+
+---
+
+### 5.2b 环境事件：被跟踪的迹象（第二通电话后）
+
+**场景：** 第三章，第二通电话之后
+**触发条件：** 第二通电话结束后
+
+**事件一：门缝下的纸条**
+
+> 今天出门买电池时，注意到街角那辆黑色轿车还在。
+> 不是之前的那辆——这辆是银灰色的，但停的位置几乎一样。
+>
+> 我假装没看到，走进了便利店。
+>
+> 回来时，门口的地上有一张纸条。
+
+**纸条内容：**
+
+```
+小朋友，游戏到此为止。
+你的外公是个聪明人——但他不够聪明。
+你比他更不够聪明。
+
+把东西交出来，我可以保证你和你的家人都安全。
+否则，下一次来的就不是纸条了。
+
+——你的朋友
+```
+
+**笔记本更新：**
+> 他给我留了纸条。就在我的门口。
+>
+> 这不是电话里的匿名威胁了——这是直接的、面对面的恐吓。
+> 他知道我长什么样，知道我住在哪里，知道我每天几点出门。
+>
+> 他说"你的家人"——他在威胁我妈妈？
+>
+> 我需要报警吗？但如果报警，外公的证据怎么办？
+>
+> ……我先把纸条收好了。拍照留证据。
+
+---
+
+**事件二：电脑里的异常**
+
+> 今天开机时，BIOS 的时间不对。
+> 系统时间显示的是三天前的日期。
+>
+> 我没有动过 BIOS 设置。有人远程改了？
+> 不对，这是一台没有联网的老电脑。不可能远程修改。
+>
+> 那就是有人物理接触过这台电脑。
+> 在我不在的时候。
+>
+> 我检查了 BIOS 设置——启动顺序没变，其他参数也没变。
+> 硬盘的 SMART 状态也正常。
+>
+> 但是……CMOS 电池旁边的灰尘有一个指纹印。
+>
+> 有人打开过机箱。
+
+**笔记本更新：**
+> BIOS 时间被改了。有人在我离开时进来过。
+> 他们可能试图直接读取硬盘——但外公的证据藏在隐藏扇区，
+> 只有通过 INT 13h 才能访问。普通的文件浏览器找不到。
+>
+> 这说明两件事：
+> 1. 李德胜的人有物理接触这台电脑的能力
+> 2. 但他们不懂 BIOS 中断——否则不会只是改了 CMOS 时间就走
+>
+> 我需要把关键数据备份出来。同时，加快进度。
+
+**English:**
+
+**Notebook update:**
+> He left me a note. Right at my door.
+> This isn't anonymous phone threats anymore — it's direct, face-to-face intimidation.
+> He knows what I look like, where I live, my daily schedule.
+>
+> He mentioned "your family" — is he threatening my mother?
+> Should I call the police? But then what about Grandpa's evidence?
+>
+> ...I kept the note. Photographed it as evidence.
+
+---
+
+**Notebook update:**
+> BIOS time was changed. Someone accessed the computer while I was away.
+> They probably tried to read the hard drive directly — but Grandpa's evidence is hidden in sectors only accessible through INT 13h. A normal file browser can't find it.
+>
+> Two things this tells me:
+> 1. Li Desheng's people have physical access to this house
+> 2. But they don't understand BIOS interrupts — otherwise they wouldn't have just changed CMOS time and left
+>
+> I need to back up the critical data immediately. And speed up my progress.
 
 ---
 
@@ -2121,21 +2338,75 @@ Grandpa's voice:
 
 ### 8.4 坏结局（格式化 C 盘）
 
-**场景：** 特殊触发
-**触发条件：** 玩家选择格式化 C 盘
+**场景：** 特殊触发（任意章节）
+**触发条件：** 玩家在 DOS 中执行 `FORMAT C:` 命令
+
+**过程：**
+
+1. DOS 显示格式化确认提示：
+   ```
+   WARNING: ALL DATA ON NON-REMOVABLE DISK
+   DRIVE C: WILL BE LOST!
+   Proceed with Format (Y/N)?
+   ```
+2. 玩家输入 `Y` 后，屏幕显示格式化进程：
+   ```
+   Formatting C:  1% complete
+   Formatting C:  2% complete
+   ...
+   ```
+3. 在格式化过程中，屏幕上突然闪现出外公的影像——外公坐在电脑前的画面一闪而过，像是在看着玩家
+4. 格式化完成，CRT 屏幕变黑
+5. 所有收集品从物品栏中消失，笔记本内容变为空白
+
+**外公画外音（最后的声音）：**
+
+> ……
+>
+> 孩子，你删掉了它。
+>
+> 这些证据……我藏了二十多年的证据……
+> 不管是为了正义还是为了什么，它们都不在了。
+>
+> 我不怪你。也许你不知道这意味着什么。
+> 也许……我应该把真相直接告诉你，而不是藏在这些扇区里。
+>
+> 但那些已经不重要了。
+>
+> 记住一件事就好——
+> 无论你用什么方式操作电脑，每一个命令都有后果。
+> 有些删除，是没有办法恢复的。
+>
+> ……
 
 **结局画面文字：**
 
 ```
-BAD ENDING: 灰飞烟灭
-"你不应该删除记忆。"
+x86 BIOS Simulator
+                   坏结局：灰飞烟灭
+
+你格式化了 C 盘。
+
+外公花了二十年保存的证据，
+你用一条命令就抹去了。
+
+不要格式化 C 盘。
+—— 外公最后的话，你没有听。
 ```
 
 **English:**
 
 ```
-BAD ENDING: Gone to Ashes
-"You shouldn't have erased the memories."
+x86 BIOS Simulator
+                   Bad Ending: Gone to Ashes
+
+You formatted the C drive.
+
+The evidence Grandpa spent twenty years preserving,
+you erased with a single command.
+
+Do not format the C drive.
+—— Grandpa's last words. You didn't listen.
 ```
 
 ---
@@ -2176,18 +2447,113 @@ BAD ENDING: Gone to Ashes
 
 ### 9.3 分支点 3：发现完整证据后——如何处理
 
-**场景：** 第三章/第四章
-**触发条件：** 发现完整证据后
+**场景：** 第三章结尾 / 第四章
+**触发条件：** 解密完整证据后，第三次电话之前
+**重要性：** 这是玩家情感投入最高的决策点。三个选项将导向截然不同的第四章体验和结局。
 
-- **A.** "把证据交给警方。外公当年没做到的事，我来做。" → "正义"线 / 李德胜再次被捕的新闻
-- **B.** "先完成外公的遗愿——打开暗室，看看还有什么。" → "真相"线 / 暗室里的最后信息
-- **C.** "这些证据已经过时了。也许外公不想让我冒险。" → "释然"线 / 玩家把软盘收好，不再深究 / 笔记本最后一页："但我还是想知道……"
+---
+
+#### 选项 A：正义线——"把证据交给警方"
+
+> "外公当年没做到的事，我来做。这些证据已经足够了。"
+
+**后续影响：**
+
+- 玩家将证据拷贝到 U 盘，通过邻居张阿姨的帮助联系了当年负责此案的退休老刑警
+- 第四章变为"等待与保护"主题：玩家一边等待警方调查结果，一边发现阁楼有被入侵的迹象（门锁被撬、窗户玻璃有划痕）
+- 李德胜的第三次电话变得更加疯狂："你以为交给警察就有用？那些人我都认识！"
+- 最终结局：新闻报道"20 年旧案重启，李某某再次被捕"，但外公的暗室始终没有打开
+- **结局画面：** 玩家坐在阁楼里，CRT 屏幕上播放着新闻，窗外是警车的灯光。外公的声音响起："孩子，你做到了。但我还有些话……没来得及说。"
+
+**结局解锁：** "正义终将到来"成就
+**代价：** 无法看到暗室中最后的告别视频
+
+---
+
+#### 选项 B：真相线——"先找到暗室"
+
+> "外公把最重要的东西留在了暗室里。我要先完成他的遗愿。"
+
+**后续影响：**
+
+- 玩家选择暂时不报警，继续收集密码线索
+- 第四章变为"与时间赛跑"主题：李德胜似乎察觉到了什么，电话越来越频繁，门外的异响也越来越近
+- 张阿姨第三次来访时主动提供了关键线索："你外公说过，密码和你们的生日有关……"
+- 最终打开暗室，看到外公最后的告别视频，获得完整证据链
+- 最终结局：完整的证据交给了可靠的人，外公的遗愿彻底完成
+- **结局画面：** 暗室中，外公的像素画像在屏幕上闪烁。外公说："孩子，你做到了。这些证据，还有这间暗室里的所有东西……都是留给你的。不是为了复仇，是为了让你记住——知识是最强大的武器。"
+
+**结局解锁：** "时间胶囊"隐藏结局（唯一能看到完整告别视频的路线）
+**代价：** 过程更加危险，李德胜的威胁持续升级
+
+---
+
+#### 选项 C：释然线——"也许该放手了"
+
+> "这些证据已经过去了二十多年。外公把它藏起来，也许就是不想让我卷入危险……"
+
+**后续影响：**
+
+- 玩家将软盘和文件收好，放回抽屉，关闭了电脑
+- 第四章变为"内心的挣扎"主题：玩家开始做其他事（整理房间、看书），但脑海中不断浮现那些证据
+- 张阿姨来访时说了一段关键的话："你外公有一次喝醉了，跟我说：'张姐，人这辈子最怕的不是坏人逍遥法外，而是自己什么都不做。'"
+- 半夜，玩家无法入睡，重新打开了电脑
+- 最终，玩家还是选择了处理证据——但方式是匿名举报
+- **结局画面：** 玩家站在邮筒前，手里拿着一个匿名信封。天刚亮，城市开始苏醒。外公的声音响起："不管你做了什么选择，你都长大了。我为你骄傲。"
+
+**结局解锁：** "释然"成就
+**特点：** 最安静但最有力量的结局，外公的画外音与其他结局不同，表达了对玩家选择的无条件接纳
+
+---
 
 **English:**
 
-- **A.** "Turn the evidence over to the police. What Grandpa couldn't do back then, I'll do." → "Justice" route / News of Li Desheng's re-arrest
-- **B.** "First fulfill Grandpa's last wish — open the secret room and see what else is there." → "Truth" route / The final information in the secret room
-- **C.** "This evidence is outdated. Maybe Grandpa didn't want me to take risks." → "Letting Go" route / The player puts away the floppy disks and stops investigating / Last page of notebook: "But I still want to know..."
+#### Option A: Justice — "Turn the evidence over to the police"
+
+> "What Grandpa couldn't do back then, I'll do. This evidence is enough."
+
+**Consequences:**
+- The player copies the evidence to a USB drive and contacts a retired detective through Aunt Zhang
+- Chapter 4 shifts to a "waiting and protection" theme: the player discovers signs of intrusion at the attic (jimmyed lock, scratched window)
+- Li Desheng's third call becomes more frantic: "You think handing it to the police will help? I know all those people!"
+- Ending: News report about the cold case being reopened, but the secret room is never opened
+- **Ending scene:** Player sitting in the attic, news playing on the CRT, police lights outside the window
+
+**Unlock:** "Justice Will Prevail" achievement
+**Cost:** Cannot see the farewell video in the secret room
+
+---
+
+#### Option B: Truth — "Find the secret room first"
+
+> "The most important thing Grandpa left is in the secret room. I need to fulfill his last wish first."
+
+**Consequences:**
+- Player chooses not to call police yet, continues collecting password clues
+- Chapter 4 shifts to a "race against time" theme: Li Desheng's calls grow more frequent, strange sounds outside
+- Aunt Zhang's third visit provides the key clue: "Your grandpa once said the password has something to do with your birthdays..."
+- Opens the secret room, sees Grandpa's farewell video, obtains the complete evidence chain
+- **Ending scene:** In the secret room, Grandpa's pixel portrait flickers on screen
+
+**Unlock:** "Time Capsule" hidden ending (the only route to see the complete farewell video)
+**Cost:** More dangerous process, escalating threats from Li Desheng
+
+---
+
+#### Option C: Letting Go — "Maybe I should let it go"
+
+> "This evidence is over twenty years old. Grandpa hid it — maybe he didn't want me to get involved..."
+
+**Consequences:**
+- Player puts the disks and files back in the drawer, turns off the computer
+- Chapter 4 shifts to an "inner struggle" theme: the player tries to do other things but can't stop thinking about the evidence
+- Aunt Zhang visits and says something crucial: "Your grandpa once got drunk and told me: 'Zhang Jie, the worst thing in life isn't bad people getting away — it's doing nothing yourself.'"
+- At midnight, unable to sleep, the player reopens the computer
+- Ultimately, the player chooses to act — through anonymous reporting
+- **Ending scene:** Player standing at a mailbox at dawn with an anonymous envelope
+
+**Unlock:** "Letting Go" achievement
+**Feature:** The quietest but most powerful ending — Grandpa's voiceover expresses unconditional acceptance of the player's choice
 
 ---
 
