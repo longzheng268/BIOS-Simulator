@@ -10,7 +10,7 @@ build/
 *.egg
 
 # Audio output (generated files)
-audio_gen/output/
+# audio_gen/output/
 
 # === Rust ===
 /target/
