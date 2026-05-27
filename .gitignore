@@ -1,0 +1,41 @@
+# === Environment / Secrets ===
+.env
+
+# === Python (audio_gen tool) ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Audio output (generated files)
+audio_gen/output/
+
+# === Rust ===
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# === Godot ===
+.godot/
+*.import
+export.cfg
+export_presets.cfg
+
+# Mono (C# in Godot)
+.mono/
+data_*/
+mono_crash.*.json
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini

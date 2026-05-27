@@ -1,0 +1,526 @@
+{
+  "metadata": {
+    "title": "BIOS Simulator - Game Script Audio Assets",
+    "title_zh": "BIOS Simulator - 游戏剧本音频素材",
+    "version": "2.0",
+    "description": "x86 BIOS Simulator - Bilingual audio assets (Chinese + English)",
+    "characters": {
+      "player": {
+        "name": "Player (Lin Yuan)",
+        "name_zh": "玩家（林远）",
+        "voice_description": "Young male, mid-twenties, CS graduate, clear voice with slight nervousness, medium-fast pace, occasional self-mumbling",
+        "voice_description_zh": "年轻男性，二十五六岁，计算机专业毕业生，声音清澈略带紧张，语速中等偏快，偶尔会自言自语"
+      },
+      "grandfather": {
+        "name": "Grandfather (Wang Zhiyuan)",
+        "name_zh": "外公（王志远）",
+        "voice_description": "Elderly male, sixties, retired programmer, aged but warm voice, slow and steady pace, occasional gentle cough, loving toward family",
+        "voice_description_zh": "老年男性，六十多岁，退休程序员，声音苍老但温暖，语速缓慢沉稳，偶尔咳嗽，带着对晚辈的慈爱"
+      },
+      "aunt_zhang": {
+        "name": "Aunt Zhang",
+        "name_zh": "张阿姨",
+        "voice_description": "Middle-aged female, around fifty, neighbor, warm and friendly voice, medium pace, caring tone with a hint of curiosity",
+        "voice_description_zh": "中年女性，五十岁左右，邻居，声音热情亲切，语速适中，带着关心和些许八卦的语气"
+      },
+      "li_desheng": {
+        "name": "Li Desheng",
+        "name_zh": "李德胜",
+        "voice_description": "Middle-aged male, fifties, company CEO, deep authoritative voice, slow pace, tone of unquestionable authority with subtle menace",
+        "voice_description_zh": "中年男性，五十多岁，公司CEO，声音低沉威严，语速慢，带着不容置疑的权威感和隐隐的威胁"
+      },
+      "narrator": {
+        "name": "Narrator / System",
+        "name_zh": "旁白/系统",
+        "voice_description": "Neutral voice, calm and objective, even pace, no emotional coloring, like a documentary narrator",
+        "voice_description_zh": "中性声音，平静客观，用于系统提示和场景描述"
+      },
+      "computer": {
+        "name": "Computer / BIOS",
+        "name_zh": "电脑/BIOS",
+        "voice_description": "Mechanical synthesized voice, cold electronic tone, even pace without inflection, like a 90s computer system prompt",
+        "voice_description_zh": "机械合成音，冷冰冰的电子音效，模拟98年电脑蜂鸣和系统提示音的感觉"
+      }
+    }
+  },
+
+  "chapters": {
+    "chapter_1_player_monologue": {
+      "title": "Chapter 1: Player Inner Monologue",
+      "title_zh": "第一章：玩家内心独白",
+      "description": "Lin Yuan's inner thoughts after discovering grandfather's old computer",
+      "segments": [
+        {
+          "id": "player_01",
+          "character": "player",
+          "text": "这……这是外公的电脑？天哪，这台电脑看起来至少有二十年了。机箱上全是灰，显示器的屏幕都发黄了。",
+          "text_en": "This... this is Grandpa's computer? God, this thing looks at least twenty years old. The case is covered in dust, and the monitor screen has turned yellow.",
+          "context": "刚发现阁楼上的旧电脑"
+        },
+        {
+          "id": "player_02",
+          "character": "player",
+          "text": "\"不要格式化C盘\"……这是外公的字迹。他为什么要专门写这个？C盘里到底有什么？",
+          "text_en": "\"Do not format the C drive\"... That's Grandpa's handwriting. Why would he specifically write this? What's on the C drive?",
+          "context": "看到显示器上的便签纸"
+        },
+        {
+          "id": "player_03",
+          "character": "player",
+          "text": "BIOS……我大学学过这个，但从来没在真正的老机器上操作过。Phoenix BIOS，这可是90年代的主流固件啊。",
+          "text_en": "BIOS... I studied this in college, but I've never actually operated it on a real vintage machine. Phoenix BIOS — this was the mainstream firmware of the 90s.",
+          "context": "电脑开机进入BIOS设置界面"
+        },
+        {
+          "id": "player_04",
+          "character": "player",
+          "text": "等等，这个硬盘的分区表……有点不对劲。C盘只有2GB，但硬盘明明是8GB的。剩下的空间去哪了？",
+          "text_en": "Wait, this hard drive's partition table... something's off. The C drive is only 2GB, but the hard drive is clearly 8GB. Where did the rest of the space go?",
+          "context": "发现磁盘分区异常"
+        },
+        {
+          "id": "player_05",
+          "character": "player",
+          "text": "外公到底在藏什么？这些加密的文件，奇怪的扇区标记……他好像在用一种很古老的方式保护某些数据。",
+          "text_en": "What exactly was Grandpa hiding? These encrypted files, the strange sector markings... It's like he was protecting some data using a very old method.",
+          "context": "深入探索磁盘内容"
+        },
+        {
+          "id": "player_06",
+          "character": "player",
+          "text": "INT 13h中断……直接读写磁盘扇区。外公是想让我用底层操作来找到这些隐藏的数据吗？这就像……就像他在教我。",
+          "text_en": "INT 13h interrupt... direct disk sector read and write. Is Grandpa trying to make me find this hidden data through low-level operations? It's like... like he's teaching me.",
+          "context": "理解外公的意图"
+        },
+        {
+          "id": "player_07",
+          "character": "player",
+          "text": "我不敢相信……这些文件里记录的东西……外公，你当年到底经历了什么？",
+          "text_en": "I can't believe it... the things recorded in these files... Grandpa, what exactly did you go through back then?",
+          "context": "发现关键证据后的震惊"
+        }
+      ]
+    },
+
+    "chapter_2_grandfather_voice": {
+      "title": "Chapter 2: Grandfather's Voice",
+      "title_zh": "第二章：外公的声音",
+      "description": "Voice messages left by grandfather on cassette tapes",
+      "segments": [
+        {
+          "id": "grandfather_01",
+          "character": "grandfather",
+          "text": "小远啊，如果你听到这段话，说明外公已经不在了。但有些事情，外公必须告诉你……",
+          "text_en": "Xiao Yuan, if you're hearing this, it means Grandpa is no longer here. But there are some things Grandpa must tell you...",
+          "context": "第一盘录音带开头"
+        },
+        {
+          "id": "grandfather_02",
+          "character": "grandfather",
+          "text": "这台电脑里藏着一个秘密。不是什么宝藏，而是一段真相。关于外公工作过的那家公司，关于那些被掩盖的事实。",
+          "text_en": "This computer hides a secret. Not some treasure, but a truth. About the company Grandpa worked for, about the facts that were covered up.",
+          "context": "解释电脑的秘密"
+        },
+        {
+          "id": "grandfather_03",
+          "character": "grandfather",
+          "text": "我知道你会找到的，因为你从小就聪明。就像当年的我一样……不，你比我强。你一定能看懂这些代码背后的含义。",
+          "text_en": "I knew you'd find it, because you've been smart since you were little. Just like me back then... no, you're better than me. You'll definitely understand the meaning behind these codes.",
+          "context": "对孙子的信任"
+        },
+        {
+          "id": "grandfather_04",
+          "character": "grandfather",
+          "text": "李德胜那个混蛋……咳咳……对不起，外公不该说脏话。但他做的那些事情，总有一天会水落石出的。",
+          "text_en": "That bastard Li Desheng... cough cough... sorry, Grandpa shouldn't swear. But the things he did will come to light someday.",
+          "context": "提到公司CEO"
+        },
+        {
+          "id": "grandfather_05",
+          "character": "grandfather",
+          "text": "记住，小远，真相有时候就藏在最不起眼的地方。就像磁盘的最后一个扇区，就像BIOS里被人遗忘的那段代码。去找吧，外公相信你。",
+          "text_en": "Remember, Xiao Yuan, truth sometimes hides in the most inconspicuous places. Like the last sector of a disk, like forgotten code in the BIOS. Go find it — Grandpa believes in you.",
+          "context": "最后的指引"
+        }
+      ]
+    },
+
+    "chapter_3_documents": {
+      "title": "Chapter 3: Letters / Diaries / Documents",
+      "title_zh": "第三章：信件/日记/文件",
+      "description": "Documents hidden on the disk, unlocked through BIOS operations",
+      "segments": [
+        {
+          "id": "doc_01",
+          "character": "narrator",
+          "text": "1998年3月15日，晴。今天是我在新思游戏工作室上班的第一天。公司虽然不大，但氛围很好。李总看起来是个很有魄力的人。",
+          "text_en": "March 15, 1998. Clear. Today is my first day at XinSi Game Studio. The company isn't big, but the atmosphere is great. Director Li seems like a man of great drive.",
+          "context": "外公日记第一页"
+        },
+        {
+          "id": "doc_02",
+          "character": "narrator",
+          "text": "1998年6月20日，阴。李总让我参与一个叫\"时间胶囊\"的项目。说是用来保存用户数据的新技术，但我看了代码之后……总觉得哪里不对劲。",
+          "text_en": "June 20, 1998. Overcast. Director Li asked me to join a project called \"Time Capsule.\" They said it's new technology for preserving user data, but after I looked at the code... something just doesn't feel right.",
+          "context": "外公日记 - 开始怀疑"
+        },
+        {
+          "id": "doc_03",
+          "character": "narrator",
+          "text": "1998年8月3日，雨。我终于明白了，\"时间胶囊\"根本不是什么数据保存技术。它是一个监控程序，可以悄悄收集用户的个人信息。李德胜到底想干什么？",
+          "text_en": "August 3, 1998. Rainy. I finally understand — \"Time Capsule\" is not data preservation technology at all. It's a surveillance program that secretly collects users' personal information. What exactly is Li Desheng trying to do?",
+          "context": "外公日记 - 发现真相"
+        },
+        {
+          "id": "doc_04",
+          "character": "narrator",
+          "text": "内部备忘录：关于\"时间胶囊\"项目的资金使用说明。经核实，项目经费中存在三百万元的异常支出，资金流向无法追溯。请各部门配合调查。",
+          "text_en": "Internal Memo: Regarding fund usage for the \"Time Capsule\" project. After verification, three million yuan in abnormal expenditures have been found in the project budget, with untraceable fund flows. All departments please cooperate with the investigation.",
+          "context": "公司内部文件"
+        },
+        {
+          "id": "doc_05",
+          "character": "narrator",
+          "text": "致审计部门：我已掌握\"时间胶囊\"项目资金挪用的确凿证据。李德胜利用该项目作为掩护，将三百万资金转入个人账户。详细账目见附件。",
+          "text_en": "To the Audit Department: I have obtained conclusive evidence of fund misappropriation in the \"Time Capsule\" project. Li Desheng used the project as cover to transfer three million yuan into personal accounts. See attachment for detailed accounts.",
+          "context": "外公的举报信草稿"
+        },
+        {
+          "id": "doc_06",
+          "character": "narrator",
+          "text": "警告：此文件包含敏感信息。\"时间胶囊\"项目的真正目的并非数据保存，而是对公民进行非法监控。所有用户数据均在不知情的情况下被收集并上传至外部服务器。",
+          "text_en": "WARNING: This file contains sensitive information. The true purpose of the \"Time Capsule\" project is not data preservation, but illegal surveillance of citizens. All user data was collected without consent and uploaded to external servers.",
+          "context": "技术分析报告"
+        },
+        {
+          "id": "doc_07",
+          "character": "narrator",
+          "text": "1998年10月12日。他们发现我在调查了。今天办公室被搜查，我的电脑也被检查过。幸好我把关键数据藏在了家里的电脑上。用了一种他们找不到的方式。",
+          "text_en": "October 12, 1998. They've discovered I'm investigating. The office was searched today, and my computer was inspected. Fortunately, I hid the critical data on my home computer. In a way they'll never find.",
+          "context": "外公日记 - 被发现"
+        },
+        {
+          "id": "doc_08",
+          "character": "narrator",
+          "text": "银行转账记录：1998年7月15日，新思游戏工作室对公账户向以下账户转账三百万元整。收款人：李德胜。备注：技术咨询费。",
+          "text_en": "Bank transfer record: July 15, 1998. XinSi Game Studio's corporate account transferred three million yuan to the following account. Recipient: Li Desheng. Note: Technical consulting fee.",
+          "context": "银行转账记录"
+        },
+        {
+          "id": "doc_09",
+          "character": "narrator",
+          "text": "证人证词：我，张明华，新思游戏工作室前员工，愿意作证。李德胜确实利用\"时间胶囊\"项目挪用公款，并进行非法监控。以下是我的亲身经历……",
+          "text_en": "Witness testimony: I, Zhang Minghua, former employee of XinSi Game Studio, am willing to testify. Li Desheng did indeed use the \"Time Capsule\" project to embezzle funds and conduct illegal surveillance. The following is my firsthand account...",
+          "context": "同事的证词"
+        },
+        {
+          "id": "doc_10",
+          "character": "narrator",
+          "text": "1999年1月5日。调查结束了。李德胜找了个替罪羊，自己全身而退。我知道这些证据总有一天会派上用场。我把它们加密保存在磁盘的隐藏分区里。如果有一天我的后人能找到这些……请让真相大白于天下。",
+          "text_en": "January 5, 1999. The investigation is over. Li Desheng found a scapegoat and walked away clean. I know this evidence will be useful someday. I've encrypted and stored it in a hidden partition on the disk. If someday my descendants can find this... please let the truth come to light.",
+          "context": "外公日记最后一页"
+        },
+        {
+          "id": "doc_11",
+          "character": "narrator",
+          "text": "密码提示：我第一次学会写程序时，用的是什么语言？答案藏在阁楼书架上那本蓝色封面的书里。第三章第七十二页，第三行。",
+          "text_en": "Password hint: What was the first programming language I learned? The answer is hidden in the blue-covered book on the attic bookshelf. Chapter three, page seventy-two, line three.",
+          "context": "密码提示文件"
+        }
+      ]
+    },
+
+    "chapter_4_aunt_zhang": {
+      "title": "Chapter 4: Conversations with Aunt Zhang",
+      "title_zh": "第四章：张阿姨对话",
+      "description": "Neighbor Aunt Zhang's four visits, providing clues about grandfather's past",
+      "segments": [
+        {
+          "id": "zhang_01",
+          "character": "aunt_zhang",
+          "text": "小远啊，你终于来了！我是住隔壁的张阿姨。你外公在世的时候，我经常帮他买菜。这房子空了好久了，你来收拾收拾是应该的。",
+          "text_en": "Xiao Yuan, you're finally here! I'm Aunt Zhang from next door. When your grandpa was alive, I often helped him buy groceries. This house has been empty for so long — it's right that you came to tidy up.",
+          "context": "第一次见面"
+        },
+        {
+          "id": "zhang_02",
+          "character": "aunt_zhang",
+          "text": "你说那台电脑？哎呀，你外公可宝贝那台电脑了。每天晚上都要在阁楼待好久，有时候半夜还能听到他在里面敲键盘的声音。我问他干什么，他就笑笑说\"在跟老朋友聊天\"。",
+          "text_en": "That computer? Oh my, your grandpa treasured that computer so much. Every evening he'd spend hours in the attic — sometimes I could hear him typing away in the middle of the night. When I asked what he was doing, he'd just smile and say \"chatting with old friends.\"",
+          "context": "询问电脑的事"
+        },
+        {
+          "id": "zhang_03",
+          "character": "aunt_zhang",
+          "text": "对了，你外公去世前几个月，来了好几次陌生人。穿西装的，开黑色轿车的。有一次我听到他们在吵架，好像在说什么\"文件\"、\"证据\"之类的。你外公后来跟我说，如果有人来问他的事，就说他什么都没留下。",
+          "text_en": "Oh right, a few months before your grandpa passed, some strangers came by several times. Wearing suits, driving black sedans. Once I heard them arguing — they seemed to be talking about \"documents\" and \"evidence.\" Your grandpa later told me that if anyone came asking about him, to say he left nothing behind.",
+          "context": "提到可疑的陌生人"
+        },
+        {
+          "id": "zhang_04",
+          "character": "aunt_zhang",
+          "text": "你外公最后那段时间，身体已经不太好啦。但他还是坚持每天去阁楼。有一次我给他送汤，看到他对着电脑屏幕流泪。他说\"我这辈子做了很多错事，但这件事我一定要做完\"。唉，你外公是个好人啊。",
+          "text_en": "In your grandpa's last days, his health wasn't great. But he still went to the attic every day. Once I brought him soup and saw him crying in front of the computer screen. He said \"I've done many wrong things in my life, but this one thing I must finish.\" Ah, your grandpa was a good man.",
+          "context": "外公最后的日子"
+        }
+      ]
+    },
+
+    "chapter_5_li_desheng": {
+      "title": "Chapter 5: Li Desheng's Phone Calls",
+      "title_zh": "第五章：李德胜电话",
+      "description": "Three phone calls from Li Desheng, escalating from probing to threats",
+      "segments": [
+        {
+          "id": "li_01",
+          "character": "li_desheng",
+          "text": "你好，请问是王志远先生的家属吗？我是李德胜，新思游戏工作室的负责人。我和你外公是老同事了，听说他去世的消息，我很遗憾。想问问你们有没有整理他的遗物？特别是他以前工作用的一些东西。",
+          "text_en": "Hello, is this the family of Mr. Wang Zhiyuan? I'm Li Desheng, the head of XinSi Game Studio. Your grandfather and I were old colleagues. I was very sorry to hear of his passing. I wanted to ask if you've gone through his belongings? Especially some things he used for work.",
+          "context": "第一通电话 - 试探"
+        },
+        {
+          "id": "li_02",
+          "character": "li_desheng",
+          "text": "小林啊，我听说你在你外公的老房子里？是这样的，你外公以前在公司有一些机密文件，如果他不小心带回家了，我们需要回收。这是公司的规定，希望你能理解。当然，我们会给你适当的补偿。",
+          "text_en": "Xiao Lin, I hear you're at your grandfather's old house? Here's the thing — your grandfather had some confidential company files, and if he accidentally brought them home, we need them back. It's company policy, I hope you understand. Of course, we'll give you appropriate compensation.",
+          "context": "第二通电话 - 利诱"
+        },
+        {
+          "id": "li_03",
+          "character": "li_desheng",
+          "text": "林远，我最后说一次。那些东西不是你能碰的。你以为你外公为什么把它们藏起来？因为他知道，有些真相一旦曝光，会伤害很多人。包括他自己。你确定要毁掉你外公一辈子的名声吗？",
+          "text_en": "Lin Yuan, I'll say this one last time. Those things are not for you to touch. Why do you think your grandfather hid them? Because he knew that once certain truths come to light, they'll hurt many people. Including himself. Are you sure you want to destroy your grandfather's lifelong reputation?",
+          "context": "第三通电话 - 威胁"
+        }
+      ]
+    },
+
+    "chapter_6_recordings": {
+      "title": "Chapter 6: Complete Cassette Tape Recordings",
+      "title_zh": "第六章：录音带完整内容",
+      "description": "Six cassette tapes documenting grandfather's investigation and inner journey",
+      "segments": [
+        {
+          "id": "tape_01",
+          "character": "grandfather",
+          "text": "录音带一，1998年8月5日。今天我偷偷拷贝了\"时间胶囊\"的核心代码。我需要时间来分析它。如果我的判断没错，这个程序的权限远远超出了正常软件的范围。它能做的事情……太可怕了。",
+          "text_en": "Tape one, August 5, 1998. Today I secretly copied the core code of \"Time Capsule.\" I need time to analyze it. If my judgment is correct, this program's permissions far exceed what normal software should have. What it can do... is terrifying.",
+          "context": "第一盒录音带"
+        },
+        {
+          "id": "tape_02",
+          "character": "grandfather",
+          "text": "录音带二，1998年8月20日。我分析完了代码。这个程序可以访问用户的摄像头、麦克风，甚至能读取硬盘上的所有文件。它把这些数据加密后上传到一个境外服务器。这不是什么游戏工作室该做的事情。这是间谍软件。",
+          "text_en": "Tape two, August 20, 1998. I've finished analyzing the code. This program can access users' cameras and microphones, and even read all files on their hard drives. It encrypts this data and uploads it to an overseas server. This is not what a game studio should be doing. This is spyware.",
+          "context": "第二盒录音带"
+        },
+        {
+          "id": "tape_03",
+          "character": "grandfather",
+          "text": "录音带三，1998年9月10日。我找到了资金流向的证据。三百万，从公司账户转到了李德胜的私人账户。他用\"技术咨询费\"的名义做的账。但银行的流水不会说谎。我需要把这些证据保存好，不能让他们找到。",
+          "text_en": "Tape three, September 10, 1998. I've found evidence of the fund transfers. Three million, transferred from the company account to Li Desheng's personal account. He disguised it as \"technical consulting fees.\" But bank records don't lie. I need to preserve this evidence — they must not find it.",
+          "context": "第三盒录音带"
+        },
+        {
+          "id": "tape_04",
+          "character": "grandfather",
+          "text": "录音带四，1998年9月25日。我尝试向有关部门举报，但石沉大海。李德胜的关系网比我想的要复杂得多。我决定用自己的方式来保存这些证据。就算我这辈子看不到结果，总有一天会有人看到的。",
+          "text_en": "Tape four, September 25, 1998. I tried reporting to the authorities, but it went nowhere. Li Desheng's network of connections is far more complex than I thought. I've decided to preserve these evidence my own way. Even if I never see the result in my lifetime, someday someone will.",
+          "context": "第四盒录音带"
+        },
+        {
+          "id": "tape_05",
+          "character": "grandfather",
+          "text": "录音带五，1998年10月15日。他们开始监视我了。我知道我时间不多了。我把所有证据分散保存在磁盘的不同位置，用了我自己发明的加密方式。只有懂底层技术的人才能找到。小远，如果你将来学了计算机……也许你能看懂外公的用心。",
+          "text_en": "Tape five, October 15, 1998. They've started surveilling me. I know I'm running out of time. I've scattered all the evidence across different locations on the disk, using an encryption method I invented myself. Only someone who understands low-level technology can find it. Xiao Yuan, if you study computers someday... maybe you'll understand what Grandpa was trying to do.",
+          "context": "第五盒录音带"
+        },
+        {
+          "id": "tape_06",
+          "character": "grandfather",
+          "text": "录音带六，1998年11月1日。这是最后一盘录音带了。我把所有的线索都留在这台电脑里。密码提示、隐藏分区、加密文件……外公能做的都做了。剩下的就交给时间吧。小远，外公爱你。无论你最后做了什么决定，外公都理解。但如果你选择寻找真相……请小心。",
+          "text_en": "Tape six, November 1, 1998. This is the last tape. I've left all the clues in this computer. Password hints, hidden partitions, encrypted files... Grandpa has done everything he can. The rest is up to time. Xiao Yuan, Grandpa loves you. Whatever decision you make, Grandpa understands. But if you choose to seek the truth... please be careful.",
+          "context": "第六盒录音带"
+        }
+      ]
+    },
+
+    "chapter_7_photos": {
+      "title": "Chapter 7: Old Photo Voiceovers",
+      "title_zh": "第七章：老照片语音",
+      "description": "Voice memories triggered by eight old photographs",
+      "segments": [
+        {
+          "id": "photo_01",
+          "character": "grandfather",
+          "text": "这张照片是我刚入职新思游戏工作室时拍的。那时候我四十岁，刚刚转行做程序员。公司很小，只有十几个人，但大家都很有激情。我记得那天我们加班到凌晨三点，为了赶第一个游戏的发布。",
+          "text_en": "This photo was taken when I first joined XinSi Game Studio. I was forty then, just switching careers to become a programmer. The company was small, only a dozen people, but everyone was full of passion. I remember we worked overtime until three in the morning that day, rushing to release our first game.",
+          "context": "入职照片"
+        },
+        {
+          "id": "photo_02",
+          "character": "grandfather",
+          "text": "这是我们团队的合影。站在中间那个笑得很灿烂的就是李德胜。说实话，那时候他确实是个好领导。对员工很好，也很有远见。谁能想到后来会变成那样呢……",
+          "text_en": "This is our team photo. The one standing in the middle with the bright smile is Li Desheng. Honestly, back then he was a good leader. Very kind to employees, very visionary. Who could have imagined he'd turn out like that...",
+          "context": "团队合影"
+        },
+        {
+          "id": "photo_03",
+          "character": "grandfather",
+          "text": "这是我和你外婆的结婚三十周年纪念照。她一直支持我学编程，哪怕我四十岁了才开始。她说\"人这辈子什么时候开始都不晚\"。你外婆……是我这辈子最对不起的人。",
+          "text_en": "This is the photo from our thirtieth wedding anniversary. Your grandmother always supported me learning to program, even though I didn't start until I was forty. She said \"it's never too late to start something in life.\" Your grandmother... is the person I owe the most in this life.",
+          "context": "结婚纪念照"
+        },
+        {
+          "id": "photo_04",
+          "character": "grandfather",
+          "text": "这张是你小时候的照片。你三岁，坐在我的腿上，我正在教你认键盘上的字母。你妈说你太小了学不会，但你居然把二十六个字母都认全了。那时候我就知道，这孩子将来一定跟计算机有缘。",
+          "text_en": "This is a photo of you as a child. You were three, sitting on my lap, and I was teaching you to recognize the letters on the keyboard. Your mother said you were too young to learn, but you actually memorized all twenty-six letters. That's when I knew — this child was destined to be connected with computers.",
+          "context": "玩家小时候的照片"
+        },
+        {
+          "id": "photo_05",
+          "character": "grandfather",
+          "text": "这是公司的年会照片。那天李德胜宣布了\"时间胶囊\"项目。所有人都很兴奋，觉得这是公司的未来。只有我……不知道为什么，总觉得心里不踏实。可能是老程序员的直觉吧。",
+          "text_en": "This is the company's annual party photo. That day Li Desheng announced the \"Time Capsule\" project. Everyone was excited, thinking it was the company's future. Only me... for some reason, I just couldn't shake the unease. Maybe it was an old programmer's instinct.",
+          "context": "公司年会"
+        },
+        {
+          "id": "photo_06",
+          "character": "grandfather",
+          "text": "这张是我一个人在办公室加班的照片。不知道谁拍的。那时候我正在分析\"时间胶囊\"的代码，越看越心惊。我记得那天晚上我抽了整整一包烟。你外婆打电话来催我回家，我说公司有事。我不敢告诉她我在做什么。",
+          "text_en": "This is a photo of me working alone in the office. I don't know who took it. I was analyzing the \"Time Capsule\" code at the time, and the more I looked, the more alarmed I became. I remember smoking an entire pack of cigarettes that night. Your grandmother called to urge me to come home — I said there was work to do. I didn't dare tell her what I was really doing.",
+          "context": "独自加班"
+        },
+        {
+          "id": "photo_07",
+          "character": "grandfather",
+          "text": "这是我最后一次参加公司活动的照片。看起来很憔悴是吧？那时候我已经决定要举报了。我知道后果，但我别无选择。一个程序员，如果连代码的对错都分不清，那还算什么程序员？",
+          "text_en": "This is the last company event I attended. I look haggard, don't I? By then I had already decided to report it. I knew the consequences, but I had no choice. A programmer who can't tell right from wrong in code — what kind of programmer would that be?",
+          "context": "最后一次公司活动"
+        },
+        {
+          "id": "photo_08",
+          "character": "grandfather",
+          "text": "这张……是我退休后在这间阁楼里拍的。我买了一台旧电脑，开始把所有的证据整理出来。你外婆以为我在写回忆录。是啊，某种意义上……这确实是我的回忆录。只不过这份回忆录里，藏着一个需要被揭开的真相。",
+          "text_en": "This one... was taken in this attic after I retired. I bought an old computer and started organizing all the evidence. Your grandmother thought I was writing a memoir. In a way, I suppose... it really is my memoir. It's just that this memoir hides a truth that needs to be uncovered.",
+          "context": "阁楼中的外公"
+        }
+      ]
+    },
+
+    "chapter_8_endings": {
+      "title": "Chapter 8: Ending Dialogues",
+      "title_zh": "第八章：结局对话",
+      "description": "Dialogue content for four different endings",
+      "segments": [
+        {
+          "id": "ending_truth",
+          "character": "player",
+          "text": "我把所有的证据都公开了。新闻发布会那天，记者们的问题像雨点一样砸过来。但我不怕。因为这些真相已经等了二十多年了。外公，你看到了吗？你做到了。",
+          "text_en": "I made all the evidence public. On the day of the press conference, reporters' questions hit me like raindrops. But I wasn't afraid. Because this truth has been waiting for over twenty years. Grandpa, do you see? You did it.",
+          "context": "结局一：真相大白"
+        },
+        {
+          "id": "ending_justice",
+          "character": "li_desheng",
+          "text": "我输了。林远，你比你外公更狠。他当年选择了沉默，而你……你毁掉了一切。但你知道吗？有些事情，不是非黑即白的。你外公当年也有他的苦衷。",
+          "text_en": "I lost. Lin Yuan, you're more ruthless than your grandfather. He chose silence back then, but you... you destroyed everything. But you know what? Some things aren't black and white. Your grandfather had his own reasons back then.",
+          "context": "结局二：正义审判（李德胜被捕）"
+        },
+        {
+          "id": "ending_compromise",
+          "character": "player",
+          "text": "我选择了和解。不是因为害怕，而是因为……外公日记的最后一句话：\"原谅比复仇更需要勇气。\"李德胜同意公开道歉，并捐出全部非法所得。也许……这就是最好的结局。",
+          "text_en": "I chose reconciliation. Not out of fear, but because... the last line in Grandpa's diary: \"Forgiveness takes more courage than revenge.\" Li Desheng agreed to a public apology and donated all his illicit gains. Maybe... this is the best ending.",
+          "context": "结局三：和解"
+        },
+        {
+          "id": "ending_silence",
+          "character": "player",
+          "text": "我把电脑关了。那些文件，那些证据，那些录音带……我决定让它们继续留在这个阁楼里。外公选择沉默了二十多年，也许……有些真相确实不适合被公开。对不起，外公。",
+          "text_en": "I turned off the computer. Those files, that evidence, those tapes... I decided to let them stay in this attic. Grandpa chose silence for over twenty years. Maybe... some truths really aren't meant to be revealed. I'm sorry, Grandpa.",
+          "context": "结局四：沉默（坏结局）"
+        }
+      ]
+    },
+
+    "chapter_9_branches": {
+      "title": "Chapter 9: Player Choice Branches",
+      "title_zh": "第九章：玩家选择分支",
+      "description": "Four key choice points with sub-options",
+      "segments": [
+        {
+          "id": "branch_1_a",
+          "character": "player",
+          "text": "我应该把这些证据交给警方。这是正确的事情，不管后果如何。",
+          "text_en": "I should hand this evidence to the police. It's the right thing to do, no matter the consequences.",
+          "context": "选择点一：发现证据后的决定 - 选项A"
+        },
+        {
+          "id": "branch_1_b",
+          "character": "player",
+          "text": "等等，我需要先想清楚。外公藏了这么多年，一定有他的理由。我不能冲动行事。",
+          "text_en": "Wait, I need to think this through first. Grandpa hid this for so many years — he must have had his reasons. I can't act impulsively.",
+          "context": "选择点一：发现证据后的决定 - 选项B"
+        },
+        {
+          "id": "branch_1_c",
+          "character": "player",
+          "text": "也许我应该联系媒体？让公众来评判这件事。但如果搞错了呢？",
+          "text_en": "Maybe I should contact the media? Let the public judge. But what if I'm wrong?",
+          "context": "选择点一：发现证据后的决定 - 选项C"
+        },
+        {
+          "id": "branch_2_a",
+          "character": "player",
+          "text": "李德胜，我不会被你吓倒的。这些证据我会公开，你休想威胁我。",
+          "text_en": "Li Desheng, I won't be intimidated by you. I will make this evidence public. Don't even think about threatening me.",
+          "context": "选择点二：面对李德胜的威胁 - 选项A"
+        },
+        {
+          "id": "branch_2_b",
+          "character": "player",
+          "text": "你说的对，有些事情确实不是非黑即白的。我们谈谈吧。",
+          "text_en": "You're right, some things really aren't black and white. Let's talk.",
+          "context": "选择点二：面对李德胜的威胁 - 选项B"
+        },
+        {
+          "id": "branch_3_a",
+          "character": "player",
+          "text": "密码是\"BASIC\"。外公第一次学的编程语言。他总说那是他的编程初恋。",
+          "text_en": "The password is \"BASIC.\" The first programming language Grandpa ever learned. He always said it was his first love in programming.",
+          "context": "选择点三：破解加密 - 选项A（正确密码）"
+        },
+        {
+          "id": "branch_3_b",
+          "character": "player",
+          "text": "让我试试……\"COBOL\"？不对。\"FORTRAN\"？也不对。外公到底用的什么密码？",
+          "text_en": "Let me try... \"COBOL\"? No. \"FORTRAN\"? Also wrong. What password did Grandpa actually use?",
+          "context": "选择点三：破解加密 - 选项B（错误密码）"
+        },
+        {
+          "id": "branch_4_a",
+          "character": "player",
+          "text": "我选择公开一切。即使这会伤害到一些人，但真相不应该被埋葬。外公用一生来保护这些证据，我不能让它们白费。",
+          "text_en": "I choose to reveal everything. Even if it hurts some people, the truth shouldn't be buried. Grandpa spent his life protecting this evidence — I can't let it go to waste.",
+          "context": "选择点四：最终决定 - 选项A（公开真相）"
+        },
+        {
+          "id": "branch_4_b",
+          "character": "player",
+          "text": "我决定私下解决。找到李德胜，让他主动承担责任。这样既能给外公一个交代，也不会造成太大的社会影响。",
+          "text_en": "I've decided to handle this privately. Find Li Desheng and make him take responsibility on his own. This way I can honor Grandpa without causing too much of a social impact.",
+          "context": "选择点四：最终决定 - 选项B（私下解决）"
+        },
+        {
+          "id": "branch_4_c",
+          "character": "player",
+          "text": "也许……有些事情就让它过去吧。外公已经不在了，翻出这些旧事又有什么意义呢？",
+          "text_en": "Maybe... some things should just be left in the past. Grandpa is gone — what's the point of digging up old stories?",
+          "context": "选择点四：最终决定 - 选项C（放弃）"
+        }
+      ]
+    }
+  }
+}
