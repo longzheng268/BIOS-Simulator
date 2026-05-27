@@ -42,7 +42,9 @@ VOICE_PROFILES_ZH = {
     "aunt_zhang": "中年女性，五十岁左右，声音热情亲切，语速适中，语气带着关心和些许八卦的好奇，像隔壁热心的邻居阿姨",
     "li_desheng": "中年男性，五十多岁，声音低沉威严，语速慢，语气不容置疑，带着隐隐的压迫感和商人的精明，像一个老练的企业高管",
     "narrator": "中性声音，平静客观，语速均匀，不带感情色彩，像纪录片的旁白解说员",
-    "computer": "机械合成音，冷冰冰的电子音效，语速均匀无起伏，像90年代电脑的系统提示音"
+    "computer": "机械合成音，冷冰冰的电子音效，语速均匀无起伏，像90年代电脑的系统提示音",
+    "env_monologue": "年轻男性，二十五六岁，声音压低、紧张不安，语速时快时慢，像在危险环境中小声自言自语，偶尔带有呼吸声和迟疑",
+    "note": "中性声音，朗读信件或文件的语气，平静但带有一丝严肃，像在宣读一份重要的文档"
 }
 
 VOICE_PROFILES_EN = {
@@ -51,7 +53,9 @@ VOICE_PROFILES_EN = {
     "aunt_zhang": "Middle-aged female, around fifty, warm and friendly voice, medium speaking pace, caring tone with a hint of curious gossip, like a kind neighbor aunt",
     "li_desheng": "Middle-aged male, fifties, deep and authoritative voice, slow speaking pace, tone of unquestionable authority with subtle menace and business shrewdness, like a seasoned corporate executive",
     "narrator": "Neutral voice, calm and objective, even speaking pace, no emotional coloring, like a documentary narrator",
-    "computer": "Mechanical synthesized voice, cold electronic tone, even pace without inflection, like a 1990s computer system prompt"
+    "computer": "Mechanical synthesized voice, cold electronic tone, even pace without inflection, like a 1990s computer system prompt",
+    "env_monologue": "Young male, mid-twenties, hushed and tense voice, variable speaking pace, like whispering self-talk in a dangerous environment, occasional breathing and hesitation",
+    "note": "Neutral voice, reading a letter or document tone, calm but with a hint of seriousness, like reading an important document aloud"
 }
 
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
