@@ -99,6 +99,34 @@ impl Room {
                 label_en: "Calendar".to_string(),
                 hover: false,
             },
+            Hotspot {
+                id: "poster".to_string(),
+                x: 620.0, y: 80.0, w: 120.0, h: 160.0,
+                label_zh: "海报".to_string(),
+                label_en: "Poster".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "notebook".to_string(),
+                x: 500.0, y: 430.0, w: 80.0, h: 50.0,
+                label_zh: "笔记本".to_string(),
+                label_en: "Notebook".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "floppy_box".to_string(),
+                x: 820.0, y: 430.0, w: 60.0, h: 40.0,
+                label_zh: "软盘盒".to_string(),
+                label_en: "Floppy Box".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "cabinet".to_string(),
+                x: 950.0, y: 400.0, w: 100.0, h: 200.0,
+                label_zh: "柜子".to_string(),
+                label_en: "Cabinet".to_string(),
+                hover: false,
+            },
         ];
 
         Self {
@@ -227,6 +255,34 @@ impl Room {
         // Calendar on wall
         draw_rectangle(ox + 180.0, oy + 100.0, 100.0, 120.0, Color::new(0.9, 0.9, 0.85, 1.0));
         draw_rectangle(ox + 180.0, oy + 100.0, 100.0, 30.0, Color::new(0.7, 0.2, 0.2, 1.0));
+
+        // Poster on wall (game company logo)
+        draw_rectangle(ox + 620.0, oy + 80.0, 120.0, 160.0, Color::new(0.15, 0.2, 0.35, 1.0));
+        draw_rectangle(ox + 630.0, oy + 90.0, 100.0, 80.0, Color::new(0.2, 0.3, 0.5, 1.0));
+        // Text on poster
+        draw_rectangle(ox + 640.0, oy + 180.0, 80.0, 8.0, Color::new(0.8, 0.8, 0.8, 1.0));
+        draw_rectangle(ox + 650.0, oy + 195.0, 60.0, 6.0, Color::new(0.6, 0.6, 0.6, 1.0));
+
+        // Notebook on desk
+        draw_rectangle(ox + 500.0, oy + 430.0, 80.0, 50.0, Color::new(0.2, 0.3, 0.5, 1.0));
+        draw_rectangle(ox + 505.0, oy + 435.0, 70.0, 40.0, Color::new(0.9, 0.9, 0.85, 1.0));
+        // Lines on notebook
+        for i in 0..4 {
+            draw_rectangle(ox + 510.0, oy + 442.0 + i as f32 * 8.0, 60.0, 1.0, Color::new(0.7, 0.8, 0.9, 1.0));
+        }
+
+        // Floppy box on desk
+        draw_rectangle(ox + 820.0, oy + 430.0, 60.0, 40.0, Color::new(0.3, 0.3, 0.35, 1.0));
+        draw_rectangle(ox + 825.0, oy + 435.0, 50.0, 15.0, Color::new(0.2, 0.2, 0.25, 1.0));
+
+        // Cabinet
+        draw_rectangle(ox + 950.0, oy + 400.0, 100.0, 200.0, Color::new(0.35, 0.3, 0.25, 1.0));
+        // Cabinet doors
+        draw_rectangle(ox + 955.0, oy + 405.0, 45.0, 190.0, Color::new(0.4, 0.35, 0.28, 1.0));
+        draw_rectangle(ox + 1000.0, oy + 405.0, 45.0, 190.0, Color::new(0.4, 0.35, 0.28, 1.0));
+        // Cabinet handles
+        draw_rectangle(ox + 995.0, oy + 490.0, 5.0, 20.0, Color::new(0.6, 0.5, 0.3, 1.0));
+        draw_rectangle(ox + 1000.0, oy + 490.0, 5.0, 20.0, Color::new(0.6, 0.5, 0.3, 1.0));
 
         // Highlight hovered hotspot
         for hs in &self.hotspots {

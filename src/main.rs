@@ -289,6 +289,49 @@ impl Game {
                                 self.vga.put_str("Press any key to continue...", 8, 0);
                                 self.state = AppState::DosCli;
                             }
+                            "poster" => {
+                                // Poster triggers memory about the game studio
+                                self.dialogue.start_chapter("chapter_3_documents");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "notebook" => {
+                                // Notebook contains grandfather's notes
+                                self.tasks.discover("read_readme");
+                                self.vga.clear(7, 0);
+                                self.vga.set_cursor(8, 10);
+                                self.vga.put_str("Found grandfather's notebook!", 14, 0);
+                                self.vga.newline();
+                                self.vga.set_cursor(10, 10);
+                                self.vga.put_str("Notes about BIOS interrupts and disk sectors.", 7, 0);
+                                self.vga.newline();
+                                self.vga.set_cursor(12, 10);
+                                self.vga.put_str("Try: type README.TXT in DOS", 8, 0);
+                                self.state = AppState::DosCli;
+                            }
+                            "floppy_box" => {
+                                // Floppy box contains more disks
+                                if !self.tasks.floppies_collected.contains(&"DISK_02".to_string()) {
+                                    self.tasks.collect_floppy("DISK_02");
+                                    self.vga.clear(7, 0);
+                                    self.vga.set_cursor(12, 20);
+                                    self.vga.put_str("Found: DISK_02 floppy disk!", 14, 0);
+                                    self.vga.newline();
+                                    self.vga.set_cursor(14, 20);
+                                    self.vga.put_str("Contains: DISK_02 data files", 7, 0);
+                                } else {
+                                    self.vga.clear(7, 0);
+                                    self.vga.set_cursor(12, 20);
+                                    self.vga.put_str("The floppy box is empty now.", 8, 0);
+                                }
+                                self.state = AppState::DosCli;
+                            }
+                            "cabinet" => {
+                                // Cabinet triggers investigation dialogue
+                                self.dialogue.start_chapter("chapter_6_recordings");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
                             _ => {}
                         }
                     }
