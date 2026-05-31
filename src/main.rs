@@ -13,6 +13,7 @@ use render::vga::{VgaBuffer, VgaRenderer};
 use render::crt::CrtEffect;
 use render::room::Room;
 use game::dialogue::DialogueEngine;
+use game::state::DosState;
 use audio::player::AudioPlayer;
 
 /// Game application states
@@ -33,6 +34,7 @@ struct Game {
     vga_renderer: VgaRenderer,
     crt: Option<CrtEffect>,
     room: Room,
+    dos: DosState,
     cursor_blink: bool,
     post_progress: usize,
     language: config::Language,
@@ -72,6 +74,7 @@ impl Game {
             vga_renderer: VgaRenderer::new(),
             crt,
             room: Room::new(),
+            dos: DosState::new(),
             cursor_blink: true,
             post_progress: 0,
             language: config::Language::default(),
@@ -214,25 +217,31 @@ impl Game {
         self.vga.put_str("(C)Copyright Microsoft Corp 1981-1994.", 7, 0);
         self.vga.newline();
         self.vga.newline();
-        self.vga.put_str("C:\\>", 7, 0);
+        self.dos.print_prompt(&mut self.vga);
         self.vga.cursor_visible = true;
     }
 
     fn handle_dos_input(&mut self) {
+        // Process typed characters
         while let Some(ch) = get_char_pressed() {
             if ch.is_ascii() && !ch.is_control() {
+                self.dos.input_char(ch);
                 self.vga.put_char(ch as u8, 7, 0);
             }
         }
+        // Execute command on Enter
         if is_key_pressed(KeyCode::Enter) {
-            self.vga.newline();
-            self.vga.put_str("C:\\>", 7, 0);
+            self.dos.execute(&mut self.vga);
         }
+        // Backspace
         if is_key_pressed(KeyCode::Backspace) {
-            if self.vga.cursor_col > 3 {
-                self.vga.cursor_col -= 1;
-                self.vga.put_char(b' ', 7, 0);
-                self.vga.cursor_col -= 1;
+            if !self.dos.command_buffer.is_empty() {
+                self.dos.backspace();
+                if self.vga.cursor_col > 0 {
+                    self.vga.cursor_col -= 1;
+                    self.vga.put_char(b' ', 7, 0);
+                    self.vga.cursor_col -= 1;
+                }
             }
         }
     }
