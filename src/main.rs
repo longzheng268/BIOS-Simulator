@@ -133,17 +133,8 @@ impl Game {
                         self.vga.put_str("v0.1.0", 8, 0);
                     }
                     Language::Chinese => {
-                        // VGA draws blank lines — CJK overlay draws Chinese text
-                        self.vga.set_cursor(8, 25);
-                        self.vga.put_str("            ", 0, 0);
-                        self.vga.set_cursor(9, 25);
-                        self.vga.put_str("            ", 0, 0);
-                        self.vga.set_cursor(10, 25);
-                        self.vga.put_str("            ", 0, 0);
-                        self.vga.set_cursor(12, 25);
-                        self.vga.put_str("            ", 0, 0);
-                        self.vga.set_cursor(14, 25);
-                        self.vga.put_str("            ", 0, 0);
+                        // Chinese mode: VGA shows only title, menu drawn by CJK overlay
+                        // Leave rows 8-14 empty in VGA buffer
                     }
                 }
 
@@ -542,11 +533,19 @@ impl Game {
             };
             let mx = crt_x + 25.0 * CHAR_WIDTH * CRT_SCALE;
             let my = crt_y;
-            draw_text_ex("[1] 新游戏",      mx, my + 8.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
-            draw_text_ex("[2] 继续游戏",    mx, my + 9.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
-            draw_text_ex("[3] 演示对话",    mx, my + 10.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
-            draw_text_ex("[F1] 语言切换",   mx, my + 12.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk.clone());
-            draw_text_ex("按 1-3 或点击开始", mx, my + 14.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk);
+
+            // Draw black rectangles to cover VGA area for menu rows
+            let row_h = CHAR_HEIGHT * CRT_SCALE;
+            let menu_w = 30.0 * CHAR_WIDTH * CRT_SCALE;
+            for row in 8..=14 {
+                draw_rectangle(mx, my + row as f32 * row_h, menu_w, row_h, BLACK);
+            }
+
+            draw_text_ex("[1] 新游戏",        mx, my + 8.5 * row_h, menu_params.clone());
+            draw_text_ex("[2] 继续游戏",      mx, my + 9.5 * row_h, menu_params.clone());
+            draw_text_ex("[3] 演示对话",      mx, my + 10.5 * row_h, menu_params.clone());
+            draw_text_ex("[F1] 语言切换",     mx, my + 12.5 * row_h, hint_cjk.clone());
+            draw_text_ex("按 1-3 或点击开始", mx, my + 14.5 * row_h, hint_cjk);
         }
 
         // Power LED
