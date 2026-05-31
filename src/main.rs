@@ -11,6 +11,7 @@ use macroquad::prelude::*;
 use config::*;
 use render::vga::{VgaBuffer, VgaRenderer};
 use render::crt::CrtEffect;
+use render::room::Room;
 use game::dialogue::DialogueEngine;
 use audio::player::AudioPlayer;
 
@@ -31,6 +32,7 @@ struct Game {
     vga: VgaBuffer,
     vga_renderer: VgaRenderer,
     crt: Option<CrtEffect>,
+    room: Room,
     cursor_blink: bool,
     post_progress: usize,
     language: config::Language,
@@ -69,6 +71,7 @@ impl Game {
             vga,
             vga_renderer: VgaRenderer::new(),
             crt,
+            room: Room::new(),
             cursor_blink: true,
             post_progress: 0,
             language: config::Language::default(),
@@ -140,6 +143,45 @@ impl Game {
             AppState::DosCli => {
                 self.handle_dos_input();
                 self.update_cursor_blink();
+                // Press R to enter room exploration
+                if is_key_pressed(KeyCode::R) {
+                    self.state = AppState::Room;
+                }
+            }
+            AppState::Room => {
+                let (mx, my) = mouse_position();
+                self.room.update(mx, my);
+                if is_mouse_button_pressed(MouseButton::Left) {
+                    if let Some(obj_id) = self.room.clicked(mx, my) {
+                        println!("Clicked: {}", obj_id);
+                        match obj_id.as_str() {
+                            "monitor" => {
+                                self.state = AppState::DosCli;
+                                self.setup_dos_cli();
+                            }
+                            "bookshelf" => {
+                                self.dialogue.start_chapter("chapter_2_grandfather_voice");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "telephone" => {
+                                self.dialogue.start_chapter("chapter_5_li_desheng");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "window" => {
+                                self.dialogue.start_chapter("chapter_4_aunt_zhang");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+                if is_key_pressed(KeyCode::Escape) {
+                    self.state = AppState::DosCli;
+                    self.setup_dos_cli();
+                }
             }
             AppState::Dialogue => {
                 self.dialogue.update(dt);
@@ -231,8 +273,28 @@ impl Game {
             Color::new(0.15, 0.15, 0.15, 1.0),
         );
 
-        // Draw VGA content (always direct — CRT shader applied as overlay if available)
+        // Draw content based on state
         match self.state {
+            AppState::Room => {
+                // Draw room scene (full window)
+                self.room.draw();
+                // Draw tooltip for hovered object
+                if let Some(ref obj_id) = self.room.hovered_id {
+                    let (mx, my) = mouse_position();
+                    let label = match obj_id.as_str() {
+                        "monitor" => "CRT Monitor",
+                        "keyboard" => "Keyboard",
+                        "bookshelf" => "Bookshelf",
+                        "window" => "Window",
+                        "drawer" => "Drawer",
+                        "lamp" => "Desk Lamp",
+                        "telephone" => "Telephone",
+                        "calendar" => "Calendar",
+                        _ => "",
+                    };
+                    draw_text(label, mx + 10.0, my - 5.0, 16.0, Color::new(1.0, 1.0, 0.8, 0.9));
+                }
+            }
             AppState::Dialogue => {
                 self.vga_renderer.draw(&self.vga, crt_x, crt_y, CRT_SCALE, false, false);
                 self.draw_dialogue_overlay(crt_x, crt_y);
