@@ -67,13 +67,20 @@ impl DosState {
             "TYPE" => cmd_type(vga, args),
             "CD" | "CHDIR" => cmd_cd(vga, args),
             "CLS" => vga.clear(7, 0),
-            "HELP" => cmd_help(vga),
+            "HELP" | "?" => cmd_help(vga),
             "VER" => cmd_ver(vga),
             "ECHO" => cmd_echo(vga, args),
             "DATE" => cmd_date(vga),
             "TIME" => cmd_time(vga),
             "VOL" => cmd_vol(vga),
             "MEM" => cmd_mem(vga),
+            "FORMAT" => cmd_format(vga, args),
+            "DEBUG" => cmd_debug(vga),
+            "FDISK" => cmd_fdisk(vga),
+            "TREE" => cmd_tree(vga),
+            "COLOR" => cmd_color(vga, args),
+            "PROMPT" => cmd_prompt(vga, args),
+            "EXIT" => cmd_exit(vga),
             _ => {
                 vga.put_str(&format!("Bad command or file name"), 7, 0);
             }
@@ -195,29 +202,6 @@ fn cmd_cd(vga: &mut VgaBuffer, args: &str) {
     }
 }
 
-fn cmd_help(vga: &mut VgaBuffer) {
-    let commands = [
-        ("DIR", "Displays a list of files"),
-        ("TYPE", "Displays the contents of a file"),
-        ("CD", "Displays or changes the current directory"),
-        ("CLS", "Clears the screen"),
-        ("VER", "Displays the DOS version"),
-        ("ECHO", "Displays a message"),
-        ("DATE", "Displays the date"),
-        ("TIME", "Displays the time"),
-        ("VOL", "Displays the volume label"),
-        ("MEM", "Displays memory usage"),
-        ("HELP", "Displays this help"),
-    ];
-
-    vga.put_str("For more information on a specific command, type HELP command-name", 7, 0);
-    vga.newline();
-    for (cmd, desc) in commands {
-        vga.put_str(&format!("{:10} {}", cmd, desc), 7, 0);
-        vga.newline();
-    }
-}
-
 fn cmd_ver(vga: &mut VgaBuffer) {
     vga.put_str("MS-DOS Version 6.22", 7, 0);
 }
@@ -260,4 +244,147 @@ fn cmd_mem(vga: &mut VgaBuffer) {
     vga.put_str("──────────────── ─────── ─────── ───────", 7, 0);
     vga.newline();
     vga.put_str("Total memory    16,384K  2,635K 13,759K", 7, 0);
+}
+
+fn cmd_format(vga: &mut VgaBuffer, args: &str) {
+    if args.to_uppercase().contains("C:") || args.to_uppercase().contains("C") {
+        // Bad ending trigger!
+        vga.put_str("WARNING: ALL DATA ON NON-REMOVABLE DISK", 12, 0);
+        vga.newline();
+        vga.put_str("DRIVE C: WILL BE LOST!", 12, 0);
+        vga.newline();
+        vga.put_str("Proceed with Format (Y/N)?", 7, 0);
+        vga.newline();
+        vga.newline();
+        vga.put_str("... just kidding. Don't do that.", 8, 0);
+        vga.newline();
+        vga.put_str("Remember: Do not format C drive.", 14, 0);
+    } else {
+        vga.put_str("Required parameter missing", 7, 0);
+        vga.newline();
+        vga.put_str("Usage: FORMAT drive:", 7, 0);
+    }
+}
+
+fn cmd_debug(vga: &mut VgaBuffer) {
+    vga.put_str("INT 13h Disk Debugger", 14, 0);
+    vga.newline();
+    vga.put_str("═══════════════════════════════════════", 8, 0);
+    vga.newline();
+    vga.put_str("AX=0201  Read Sector", 7, 0);
+    vga.newline();
+    vga.put_str("  AH=02  Function: Read", 7, 0);
+    vga.newline();
+    vga.put_str("  AL=01  Sectors: 1", 7, 0);
+    vga.newline();
+    vga.put_str("  CH=00  Cylinder: 0", 7, 0);
+    vga.newline();
+    vga.put_str("  CL=01  Sector: 1", 7, 0);
+    vga.newline();
+    vga.put_str("  DH=00  Head: 0", 7, 0);
+    vga.newline();
+    vga.put_str("  DL=80  Drive: C:", 7, 0);
+    vga.newline();
+    vga.newline();
+    vga.put_str("Example: Read sector 200 from C:", 8, 0);
+    vga.newline();
+    vga.put_str("  AX=0201 CH=00 CL=C8 DH=00 DL=80", 14, 0);
+    vga.newline();
+    vga.newline();
+    vga.put_str("Sector 200 (0xC8) contains hidden data.", 7, 0);
+    vga.newline();
+    vga.put_str("Try: type EVIDENCE.BIN after reading.", 8, 0);
+}
+
+fn cmd_fdisk(vga: &mut VgaBuffer) {
+    vga.put_str("Fixed Disk Partition Info", 14, 0);
+    vga.newline();
+    vga.put_str("═══════════════════════════════════════", 8, 0);
+    vga.newline();
+    vga.newline();
+    vga.put_str("Part  Boot  Type    Start    Size", 7, 0);
+    vga.newline();
+    vga.put_str("────  ────  ──────  ───────  ────────", 7, 0);
+    vga.newline();
+    vga.put_str("  1    Yes  FAT16   0x0001   2.0 GB", 7, 0);
+    vga.newline();
+    vga.put_str("  2    No   Hidden  0x0FA1   6.0 GB", 12, 0);
+    vga.newline();
+    vga.newline();
+    vga.put_str("WARNING: Partition 2 is HIDDEN.", 12, 0);
+    vga.newline();
+    vga.put_str("Use INT 13h to access hidden sectors.", 8, 0);
+}
+
+fn cmd_tree(vga: &mut VgaBuffer) {
+    vga.put_str("C:\\.", 7, 0);
+    vga.newline();
+    vga.put_str("├── README.TXT", 7, 0);
+    vga.newline();
+    vga.put_str("├── LETTER.TXT", 7, 0);
+    vga.newline();
+    vga.put_str("├── DIARY.TXT", 7, 0);
+    vga.newline();
+    vga.put_str("├── EVIDENCE.BIN", 7, 0);
+    vga.newline();
+    vga.put_str("├── FINAL.TXT", 7, 0);
+    vga.newline();
+    vga.put_str("├── TOOLS.EXE", 7, 0);
+    vga.newline();
+    vga.put_str("└── [HIDDEN PARTITION]", 12, 0);
+}
+
+fn cmd_color(vga: &mut VgaBuffer, args: &str) {
+    if args.is_empty() {
+        vga.put_str("Sets the console foreground color.", 7, 0);
+        vga.newline();
+        vga.put_str("COLOR attr", 7, 0);
+        vga.newline();
+        vga.put_str("  0=Black  1=Blue   2=Green  3=Cyan", 7, 0);
+        vga.newline();
+        vga.put_str("  4=Red    5=Purple 6=Brown  7=White", 7, 0);
+        vga.newline();
+        vga.put_str("  8=Gray   9=LBlue  A=LGreen B=LCyan", 7, 0);
+        vga.newline();
+        vga.put_str("  C=LRed   D=LPurp  E=Yellow F=BWhite", 7, 0);
+    } else {
+        vga.put_str("Color changed (demo — not yet implemented)", 8, 0);
+    }
+}
+
+fn cmd_prompt(vga: &mut VgaBuffer, _args: &str) {
+    vga.put_str("PROMPT [Grandpa's Computer] $P$G", 7, 0);
+}
+
+fn cmd_exit(vga: &mut VgaBuffer) {
+    vga.put_str("Returning to room...", 7, 0);
+    // Note: actual state change happens in main.rs
+}
+
+fn cmd_help(vga: &mut VgaBuffer) {
+    let commands = [
+        ("DIR", "Displays a list of files"),
+        ("TYPE", "Displays the contents of a file"),
+        ("CD", "Displays or changes the current directory"),
+        ("CLS", "Clears the screen"),
+        ("VER", "Displays the DOS version"),
+        ("ECHO", "Displays a message"),
+        ("DATE", "Displays the date"),
+        ("TIME", "Displays the time"),
+        ("VOL", "Displays the volume label"),
+        ("MEM", "Displays memory usage"),
+        ("FORMAT", "Formats a disk (don't do it!)"),
+        ("DEBUG", "INT 13h disk debugger"),
+        ("FDISK", "Display partition info"),
+        ("TREE", "Display directory tree"),
+        ("COLOR", "Set console color"),
+        ("HELP", "Displays this help"),
+    ];
+
+    vga.put_str("For more information, type HELP command", 7, 0);
+    vga.newline();
+    for (cmd, desc) in commands {
+        vga.put_str(&format!("{:10} {}", cmd, desc), 7, 0);
+        vga.newline();
+    }
 }
