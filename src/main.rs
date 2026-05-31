@@ -14,6 +14,8 @@ use render::crt::CrtEffect;
 use render::room::Room;
 use game::dialogue::DialogueEngine;
 use game::state::DosState;
+use game::task::TaskSystem;
+use game::save::SaveManager;
 use audio::player::AudioPlayer;
 
 /// Game application states
@@ -35,8 +37,11 @@ struct Game {
     crt: Option<CrtEffect>,
     room: Room,
     dos: DosState,
+    tasks: TaskSystem,
+    saves: SaveManager,
     cursor_blink: bool,
     post_progress: usize,
+    play_time: f64,
     language: config::Language,
     dialogue: DialogueEngine,
     audio: AudioPlayer,
@@ -75,8 +80,11 @@ impl Game {
             crt,
             room: Room::new(),
             dos: DosState::new(),
+            tasks: TaskSystem::new(),
+            saves: SaveManager::new(),
             cursor_blink: true,
             post_progress: 0,
+            play_time: 0.0,
             language: config::Language::default(),
             dialogue,
             audio: AudioPlayer::new(),
@@ -89,6 +97,7 @@ impl Game {
         let now = macroquad::time::get_time();
         let dt = now - self.last_time;
         self.last_time = now;
+        self.play_time += dt;
 
         // Global: toggle language with L key
         if is_key_pressed(KeyCode::L) {
@@ -159,10 +168,12 @@ impl Game {
                         println!("Clicked: {}", obj_id);
                         match obj_id.as_str() {
                             "monitor" => {
+                                self.tasks.discover("boot_computer");
                                 self.state = AppState::DosCli;
                                 self.setup_dos_cli();
                             }
                             "bookshelf" => {
+                                self.tasks.discover("listen_all_tapes");
                                 self.dialogue.start_chapter("chapter_2_grandfather_voice");
                                 self.play_current_dialogue_audio();
                                 self.state = AppState::Dialogue;
@@ -173,9 +184,24 @@ impl Game {
                                 self.state = AppState::Dialogue;
                             }
                             "window" => {
+                                self.tasks.discover("visit_aunt_zhang");
                                 self.dialogue.start_chapter("chapter_4_aunt_zhang");
                                 self.play_current_dialogue_audio();
                                 self.state = AppState::Dialogue;
+                            }
+                            "drawer" => {
+                                // Drawer contains a floppy disk
+                                self.tasks.discover("collect_disk_01");
+                                self.tasks.collect_floppy("DISK_01");
+                                self.tasks.complete("collect_disk_01");
+                                // Show a brief message
+                                self.vga.clear(7, 0);
+                                self.vga.set_cursor(12, 20);
+                                self.vga.put_str("Found: DISK_01 floppy disk!", 14, 0);
+                                self.vga.newline();
+                                self.vga.set_cursor(14, 20);
+                                self.vga.put_str("Press any key to continue...", 8, 0);
+                                self.state = AppState::DosCli;
                             }
                             _ => {}
                         }
