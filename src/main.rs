@@ -20,7 +20,7 @@ use game::tutorial::{Tutorial, TutorialStep};
 use audio::player::AudioPlayer;
 
 /// Game application states
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 enum AppState {
     PoweredOff,
     Post,
@@ -29,6 +29,8 @@ enum AppState {
     DosCli,
     Room,
     Dialogue,
+    /// Showing branch choices (player picks A/B/C)
+    BranchChoice { branch_prefix: String, choices: Vec<(String, String)> },
 }
 
 struct Game {
@@ -342,10 +344,51 @@ impl Game {
                                 self.state = AppState::DosCli;
                             }
                             "cabinet" => {
-                                // Cabinet triggers investigation dialogue
                                 self.dialogue.start_chapter("chapter_6_recordings");
                                 self.play_current_dialogue_audio();
                                 self.state = AppState::Dialogue;
+                            }
+                            "calendar" => {
+                                // Calendar triggers photo memories (chapter 7)
+                                self.dialogue.start_chapter("chapter_7_photos");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "poster" => {
+                                // Poster triggers documents about the company (chapter 3)
+                                self.dialogue.start_chapter("chapter_3_documents");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "notebook" => {
+                                self.tasks.discover("read_readme");
+                                self.dialogue.start_chapter("chapter_1_player_monologue");
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                            }
+                            "floppy_03" | "floppy_04" | "floppy_05" | "floppy_06" => {
+                                let disk_id = match obj_id.as_str() {
+                                    "floppy_03" => "DISK_03",
+                                    "floppy_04" => "DISK_04",
+                                    "floppy_05" => "DISK_05",
+                                    "floppy_06" => "DISK_06",
+                                    _ => "",
+                                };
+                                if !self.tasks.floppies_collected.contains(&disk_id.to_string()) {
+                                    self.tasks.collect_floppy(disk_id);
+                                    self.tutorial.on_find_floppy();
+                                    self.vga.clear(7, 0);
+                                    self.vga.set_cursor(12, 20);
+                                    self.vga.put_str(&format!("Found: {} floppy disk!", disk_id), 14, 0);
+                                    self.vga.newline();
+                                    self.vga.set_cursor(14, 20);
+                                    self.vga.put_str("Check it in DOS with DIR command.", 7, 0);
+                                } else {
+                                    self.vga.clear(7, 0);
+                                    self.vga.set_cursor(12, 25);
+                                    self.vga.put_str("Already collected this disk.", 8, 0);
+                                }
+                                self.state = AppState::DosCli;
                             }
                             _ => {}
                         }
@@ -372,6 +415,30 @@ impl Game {
                 if is_key_pressed(KeyCode::Escape) {
                     self.dialogue.skip();
                     self.audio.stop();
+                    self.state = AppState::DosCli;
+                    self.setup_dos_cli();
+                }
+            }
+            AppState::BranchChoice { ref branch_prefix, ref choices } => {
+                // Player selects A/B/C with keyboard
+                let selection = if is_key_pressed(KeyCode::A) {
+                    choices.iter().find(|(id, _)| id.ends_with("_a"))
+                } else if is_key_pressed(KeyCode::B) {
+                    choices.iter().find(|(id, _)| id.ends_with("_b"))
+                } else if is_key_pressed(KeyCode::C) {
+                    choices.iter().find(|(id, _)| id.ends_with("_c"))
+                } else {
+                    None
+                };
+
+                if let Some((id, _)) = selection {
+                    let id = id.clone();
+                    self.dialogue.start_branch(&id);
+                    self.play_current_dialogue_audio();
+                    self.state = AppState::Dialogue;
+                }
+
+                if is_key_pressed(KeyCode::Escape) {
                     self.state = AppState::DosCli;
                     self.setup_dos_cli();
                 }
@@ -447,6 +514,15 @@ impl Game {
                 }
                 CommandResult::Dir => {
                     self.tutorial.on_dir();
+                }
+                CommandResult::ShowBranch(prefix) => {
+                    let choices = self.dialogue.get_branch_choices(&prefix, self.language);
+                    if !choices.is_empty() {
+                        self.state = AppState::BranchChoice {
+                            branch_prefix: prefix,
+                            choices,
+                        };
+                    }
                 }
                 CommandResult::None => {}
             }
@@ -547,6 +623,51 @@ impl Game {
                 self.vga_renderer.draw(&self.vga, crt_x, crt_y, CRT_SCALE, false, false);
                 self.draw_dialogue_overlay(crt_x, crt_y);
             }
+            AppState::BranchChoice { ref choices, .. } => {
+                // Draw VGA background
+                self.vga_renderer.draw(&self.vga, crt_x, crt_y, CRT_SCALE, false, false);
+                // Draw choice overlay
+                let box_h = 200.0;
+                let box_y = crt_y + (CRT_CONTENT_H - box_h) / 2.0;
+                let box_x = crt_x + 100.0;
+                let box_w = CRT_CONTENT_W - 200.0;
+
+                draw_rectangle(box_x, box_y, box_w, box_h, Color::new(0.0, 0.0, 0.1, 0.95));
+                draw_rectangle_lines(box_x, box_y, box_w, box_h, 2.0, Color::new(0.3, 0.6, 1.0, 1.0));
+
+                let title_params = TextParams {
+                    font: Some(&self.font_cjk),
+                    font_size: 20,
+                    color: Color::new(0.3, 0.8, 1.0, 1.0),
+                    ..Default::default()
+                };
+                let choice_params = TextParams {
+                    font: Some(&self.font_cjk),
+                    font_size: 18,
+                    color: WHITE,
+                    ..Default::default()
+                };
+                let hint_params = TextParams {
+                    font: Some(&self.font_cjk),
+                    font_size: 14,
+                    color: Color::new(0.5, 0.5, 0.5, 1.0),
+                    ..Default::default()
+                };
+
+                let title = match self.language {
+                    Language::Chinese => "做出你的选择：",
+                    Language::English => "Make your choice:",
+                };
+                draw_text_ex(title, box_x + 16.0, box_y + 28.0, title_params);
+
+                for (i, (_, text)) in choices.iter().enumerate() {
+                    let letter = (b'A' + i as u8) as char;
+                    let label = format!("[{}] {}", letter, text);
+                    draw_text_ex(&label, box_x + 16.0, box_y + 60.0 + i as f32 * 30.0, choice_params.clone());
+                }
+
+                draw_text_ex("[A/B/C] Select  [Esc] Cancel", box_x + 16.0, box_y + box_h - 12.0, hint_params);
+            }
             _ => {
                 self.vga_renderer.draw(
                     &self.vga, crt_x, crt_y, CRT_SCALE,
@@ -609,7 +730,7 @@ impl Game {
         };
 
         // State-specific hints — function keys only (no single-letter shortcuts)
-        let hints = match (self.state, self.language) {
+        let hints = match (&self.state, self.language) {
             (AppState::PoweredOff, Language::Chinese) =>
                 "[1] 新游戏  [2] 继续  [3] 演示  [F1] 语言".to_string(),
             (AppState::PoweredOff, Language::English) =>

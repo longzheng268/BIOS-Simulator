@@ -207,4 +207,44 @@ impl DialogueEngine {
             .map(|s| s.chapters.keys().cloned().collect())
             .unwrap_or_default()
     }
+
+    /// Get branch choices for a given branch point (e.g., "branch_1" → ["branch_1_a", "branch_1_b"])
+    pub fn get_branch_choices(&self, branch_prefix: &str, lang: Language) -> Vec<(String, String)> {
+        let mut choices = Vec::new();
+        if let Some(ref script) = self.script {
+            if let Some(chapter) = script.chapters.get("chapter_9_branches") {
+                for seg in &chapter.segments {
+                    if seg.id.starts_with(branch_prefix) && seg.id != branch_prefix {
+                        let text = match lang {
+                            Language::Chinese => seg.text.clone(),
+                            Language::English => seg.text_en.clone(),
+                        };
+                        choices.push((seg.id.clone(), text));
+                    }
+                }
+            }
+        }
+        choices
+    }
+
+    /// Start a specific branch segment by ID
+    pub fn start_branch(&mut self, segment_id: &str) {
+        self.current_chapter = Some("chapter_9_branches".to_string());
+        if let Some(ref script) = self.script {
+            if let Some(chapter) = script.chapters.get("chapter_9_branches") {
+                for (i, seg) in chapter.segments.iter().enumerate() {
+                    if seg.id == segment_id {
+                        self.current_segment_index = i;
+                        self.is_active = true;
+                        self.target_text = seg.text.clone();
+                        self.display_text.clear();
+                        self.char_index = 0;
+                        self.typewriter_timer = 0.0;
+                        self.waiting_for_input = false;
+                        return;
+                    }
+                }
+            }
+        }
+    }
 }

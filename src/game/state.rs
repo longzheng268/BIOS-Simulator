@@ -8,7 +8,6 @@ use crate::render::vga::VgaBuffer;
 #[derive(Debug, Clone)]
 pub enum CommandResult {
     None,
-    /// Player ran DIR — tutorial trigger
     Dir,
     ReadFile { chapter: String, file: String },
     DiscoverTask(String),
@@ -16,6 +15,8 @@ pub enum CommandResult {
     CollectFloppy(String),
     BadEnding,
     ExitToRoom,
+    /// Show a branch choice dialog
+    ShowBranch(String),
 }
 
 /// Current DOS state
@@ -95,6 +96,12 @@ impl DosState {
             "FDISK" => { cmd_fdisk(vga); CommandResult::DiscoverTask("learn_int13h".to_string()) }
             "TREE" => { cmd_tree(vga); CommandResult::None }
             "EXIT" => { CommandResult::ExitToRoom }
+            "CHOOSE" | "DECIDE" => {
+                vga.put_str("You face a critical decision.", 14, 0);
+                vga.newline();
+                vga.put_str("How do you handle the evidence?", 7, 0);
+                CommandResult::ShowBranch("branch_3".to_string())
+            }
             _ => {
                 vga.put_str("Bad command or file name", 7, 0);
                 CommandResult::None
@@ -289,18 +296,28 @@ fn cmd_mem(vga: &mut VgaBuffer) {
 }
 
 fn cmd_format(vga: &mut VgaBuffer, args: &str) -> CommandResult {
-    if args.to_uppercase().contains("C:") || args.to_uppercase().contains("C") {
+    if args.to_uppercase().contains("C:") || args.to_uppercase().contains("C") || args.to_uppercase() == "C" {
+        // Bad ending — format C: drive
         vga.put_str("WARNING: ALL DATA ON NON-REMOVABLE DISK", 12, 0);
         vga.newline();
         vga.put_str("DRIVE C: WILL BE LOST!", 12, 0);
         vga.newline();
-        vga.put_str("Proceed with Format (Y/N)?", 7, 0);
+        vga.put_str("Proceed with Format (Y/N)? Y", 7, 0);
         vga.newline();
         vga.newline();
-        vga.put_str("... just kidding. Don't do that.", 8, 0);
+        vga.put_str("Formatting C: ...", 12, 0);
         vga.newline();
-        vga.put_str("Remember: Do not format C drive.", 14, 0);
-        CommandResult::None
+        vga.put_str("All data destroyed.", 12, 0);
+        vga.newline();
+        vga.newline();
+        vga.put_str("Grandpa spent 20 years hiding this evidence.", 7, 0);
+        vga.newline();
+        vga.put_str("You erased it with one command.", 7, 0);
+        vga.newline();
+        vga.put_str("Do not format C drive.", 14, 0);
+        vga.newline();
+        vga.put_str("Grandpa's last words. You didn't listen.", 8, 0);
+        CommandResult::BadEnding
     } else {
         vga.put_str("Required parameter missing", 7, 0);
         vga.newline();

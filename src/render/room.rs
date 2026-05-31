@@ -116,6 +116,35 @@ impl Room {
                 label_en: "Cabinet".to_string(),
                 hover: false,
             },
+            // Floppy disk locations (hidden throughout the room)
+            Hotspot {
+                id: "floppy_03".to_string(),
+                x: 60.0, y: 450.0, w: 30.0, h: 20.0,
+                label_zh: "软盘 DISK_03".to_string(),
+                label_en: "Floppy DISK_03".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "floppy_04".to_string(),
+                x: 160.0, y: 200.0, w: 30.0, h: 20.0,
+                label_zh: "软盘 DISK_04".to_string(),
+                label_en: "Floppy DISK_04".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "floppy_05".to_string(),
+                x: 960.0, y: 550.0, w: 30.0, h: 20.0,
+                label_zh: "软盘 DISK_05".to_string(),
+                label_en: "Floppy DISK_05".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "floppy_06".to_string(),
+                x: 350.0, y: 350.0, w: 30.0, h: 20.0,
+                label_zh: "软盘 DISK_06".to_string(),
+                label_en: "Floppy DISK_06".to_string(),
+                hover: false,
+            },
             // Large areas last
             Hotspot {
                 id: "bookshelf".to_string(),
@@ -308,6 +337,21 @@ impl Room {
         // Cabinet handles
         draw_rectangle(ox + 995.0, oy + 490.0, 5.0, 20.0, Color::new(0.6, 0.5, 0.3, 1.0));
         draw_rectangle(ox + 1000.0, oy + 490.0, 5.0, 20.0, Color::new(0.6, 0.5, 0.3, 1.0));
+
+        // Floppy disks scattered around the room
+        let floppy_color = Color::new(0.1, 0.1, 0.3, 1.0);
+        // DISK_03 — on bookshelf bottom
+        draw_rectangle(ox + 60.0, oy + 450.0, 30.0, 20.0, floppy_color);
+        draw_rectangle(ox + 62.0, oy + 452.0, 26.0, 8.0, Color::new(0.2, 0.2, 0.4, 1.0));
+        // DISK_04 — on wall near calendar
+        draw_rectangle(ox + 160.0, oy + 200.0, 30.0, 20.0, floppy_color);
+        draw_rectangle(ox + 162.0, oy + 202.0, 26.0, 8.0, Color::new(0.2, 0.2, 0.4, 1.0));
+        // DISK_05 — near cabinet
+        draw_rectangle(ox + 960.0, oy + 550.0, 30.0, 20.0, floppy_color);
+        draw_rectangle(ox + 962.0, oy + 552.0, 26.0, 8.0, Color::new(0.2, 0.2, 0.4, 1.0));
+        // DISK_06 — on desk
+        draw_rectangle(ox + 350.0, oy + 350.0, 30.0, 20.0, floppy_color);
+        draw_rectangle(ox + 352.0, oy + 352.0, 26.0, 8.0, Color::new(0.2, 0.2, 0.4, 1.0));
 
         // Highlight hovered hotspot
         for hs in &self.hotspots {
