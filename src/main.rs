@@ -113,21 +113,13 @@ impl Game {
             self.state = AppState::Dialogue;
         }
 
-        // Debug: log mouse clicks in PoweredOff state
-        if self.state == AppState::PoweredOff && is_mouse_button_pressed(MouseButton::Left) {
-            println!("Mouse clicked in PoweredOff state!");
-        }
-
         match self.state {
             AppState::PoweredOff => {
                 self.vga.clear(0, 0);
-                // Title (always English in VGA)
                 self.vga.set_cursor(4, 22);
                 self.vga.put_str("x86 BIOS Simulator", 15, 0);
                 self.vga.set_cursor(5, 22);
                 self.vga.put_str("==================", 8, 0);
-
-                // Menu (always English in VGA — CJK overlay shows translated text)
                 self.vga.set_cursor(8, 25);
                 self.vga.put_str("[1] New Game", 7, 0);
                 self.vga.set_cursor(9, 25);
@@ -139,8 +131,8 @@ impl Game {
                 self.vga.set_cursor(14, 25);
                 self.vga.put_str("v0.1.0", 8, 0);
 
-                // Menu input
-                if is_key_pressed(KeyCode::Key1) || (is_mouse_button_pressed(MouseButton::Left) && self.vga.cursor_row >= 8 && self.vga.cursor_row <= 10) {
+                // Menu input — keyboard or click anywhere on screen
+                if is_key_pressed(KeyCode::Key1) || is_mouse_button_pressed(MouseButton::Left) {
                     self.state = AppState::Post;
                     self.post_progress = 0;
                     self.vga.clear(7, 0);
