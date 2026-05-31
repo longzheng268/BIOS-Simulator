@@ -99,18 +99,15 @@ impl Game {
         self.last_time = now;
         self.play_time += dt;
 
-        // Global: toggle language with L key
-        if is_key_pressed(KeyCode::L) {
-            self.language = self.language.toggle();
-            println!("Language toggled to: {:?}", self.language);
-        }
-
-        // Global: press D to demo a dialogue chapter
-        if is_key_pressed(KeyCode::D) && self.state != AppState::Dialogue {
-            println!("Starting dialogue demo...");
-            self.dialogue.start_chapter("chapter_1_player_monologue");
-            self.play_current_dialogue_audio();
-            self.state = AppState::Dialogue;
+        // Function keys (never conflict with DOS typing)
+        // F1 = Language toggle (works everywhere except DOS input)
+        // F2 = Return to title menu
+        // F7 = Demo dialogue
+        if is_key_pressed(KeyCode::F2) && self.state != AppState::PoweredOff {
+            self.audio.stop();
+            self.dialogue.skip();
+            self.state = AppState::PoweredOff;
+            return;
         }
 
         match self.state {
@@ -127,9 +124,14 @@ impl Game {
                 self.vga.set_cursor(10, 25);
                 self.vga.put_str("[3] Demo Dialogue", 7, 0);
                 self.vga.set_cursor(12, 25);
-                self.vga.put_str("[L] Language", 8, 0);
+                self.vga.put_str("[F1] Language", 8, 0);
                 self.vga.set_cursor(14, 25);
                 self.vga.put_str("v0.1.0", 8, 0);
+
+                // F1 = Language toggle (only in menu)
+                if is_key_pressed(KeyCode::F1) {
+                    self.language = self.language.toggle();
+                }
 
                 // Menu input — keyboard or click anywhere on screen
                 if is_key_pressed(KeyCode::Key1) || is_mouse_button_pressed(MouseButton::Left) {
@@ -187,9 +189,19 @@ impl Game {
             AppState::DosCli => {
                 self.handle_dos_input();
                 self.update_cursor_blink();
-                // Press R to enter room exploration
-                if is_key_pressed(KeyCode::R) {
+                // F3 = Enter room exploration
+                if is_key_pressed(KeyCode::F3) {
                     self.state = AppState::Room;
+                }
+                // F1 = Language toggle
+                if is_key_pressed(KeyCode::F1) {
+                    self.language = self.language.toggle();
+                }
+                // F7 = Demo dialogue
+                if is_key_pressed(KeyCode::F7) {
+                    self.dialogue.start_chapter("chapter_1_player_monologue");
+                    self.play_current_dialogue_audio();
+                    self.state = AppState::Dialogue;
                 }
                 // F5 = Quick save
                 if is_key_pressed(KeyCode::F5) {
@@ -514,8 +526,8 @@ impl Game {
             draw_text_ex("[1] 新游戏",      mx, my + 8.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
             draw_text_ex("[2] 继续游戏",    mx, my + 9.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
             draw_text_ex("[3] 演示对话",    mx, my + 10.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
-            draw_text_ex("[L] 语言: 中文",  mx, my + 12.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk.clone());
-            draw_text_ex("按 1-3 或点击",   mx, my + 14.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk);
+            draw_text_ex("[F1] 语言切换",   mx, my + 12.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk.clone());
+            draw_text_ex("按 1-3 或点击开始", mx, my + 14.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk);
         }
 
         // Power LED
@@ -540,25 +552,25 @@ impl Game {
             ..Default::default()
         };
 
-        // State-specific hints
+        // State-specific hints — function keys only (no single-letter shortcuts)
         let hints = match (self.state, self.language) {
             (AppState::PoweredOff, Language::Chinese) =>
-                "[1] 新游戏  [2] 继续  [3] 演示对话  [L] 语言".to_string(),
+                "[1] 新游戏  [2] 继续  [3] 演示  [F1] 语言".to_string(),
             (AppState::PoweredOff, Language::English) =>
-                "[1] New Game  [2] Continue  [3] Demo  [L] Language".to_string(),
+                "[1] New  [2] Continue  [3] Demo  [F1] Language".to_string(),
             (AppState::DosCli, Language::Chinese) =>
-                "[R] 房间  [F5] 存档  [F9] 读档  [HELP] 命令  [L] 语言  [D] 对话".to_string(),
+                "[F1] 语言  [F3] 房间  [F5] 存档  [F7] 对话  [F9] 读档  [F2] 菜单".to_string(),
             (AppState::DosCli, Language::English) =>
-                "[R] Room  [F5] Save  [F9] Load  [HELP] Commands  [L] Lang  [D] Dialogue".to_string(),
+                "[F1] Lang  [F3] Room  [F5] Save  [F7] Dialogue  [F9] Load  [F2] Menu".to_string(),
             (AppState::Room, Language::Chinese) =>
-                "点击物体交互  [Escape] 返回 DOS  [L] 语言".to_string(),
+                "点击物体交互  [F1] 语言  [F2] 菜单  [Esc] DOS".to_string(),
             (AppState::Room, Language::English) =>
-                "Click objects to interact  [Escape] Back to DOS  [L] Language".to_string(),
+                "Click to interact  [F1] Lang  [F2] Menu  [Esc] DOS".to_string(),
             (AppState::Dialogue, Language::Chinese) =>
-                "[Enter/Space] 继续  [Escape] 跳过  [L] 语言".to_string(),
+                "[Enter/Space] 继续  [Esc] 跳过  [F1] 语言  [F2] 菜单".to_string(),
             (AppState::Dialogue, Language::English) =>
-                "[Enter/Space] Continue  [Escape] Skip  [L] Language".to_string(),
-            _ => "[L] Language".to_string(),
+                "[Enter/Space] Continue  [Esc] Skip  [F1] Lang  [F2] Menu".to_string(),
+            _ => "[F1] Language  [F2] Menu".to_string(),
         };
         draw_text_ex(&hints, 10.0, screen_height() - 10.0, hint_params);
 
