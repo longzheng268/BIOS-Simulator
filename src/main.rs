@@ -189,6 +189,7 @@ impl Game {
                     self.vga.put_str("Press F2 to enter Setup, F12 for Boot Menu", 8, 0);
                     self.vga.newline();
                     self.vga.put_str("Starting DOS...", 7, 0);
+                    self.tasks.complete("boot_computer");
                     self.state = AppState::DosCli;
                     self.setup_dos_cli();
                 }
@@ -455,6 +456,28 @@ impl Game {
             ..Default::default()
         };
         draw_text_ex("[L] Language  [D] Demo Dialogue", 10.0, screen_height() - 10.0, hint_params);
+
+        // Show collected items and task progress
+        if !self.tasks.floppies_collected.is_empty() {
+            let items = format!("Floppies: {}", self.tasks.floppies_collected.join(", "));
+            let item_params = TextParams {
+                font: Some(&self.font_cjk),
+                font_size: 16,
+                color: Color::new(0.4, 0.4, 0.4, 1.0),
+                ..Default::default()
+            };
+            draw_text_ex(&items, 10.0, 40.0, item_params);
+        }
+        // Show active tasks hint in DOS mode
+        if self.state == AppState::DosCli {
+            let dos_hints = TextParams {
+                font: Some(&self.font_cjk),
+                font_size: 16,
+                color: Color::new(0.4, 0.4, 0.4, 1.0),
+                ..Default::default()
+            };
+            draw_text_ex("[R] Room  [F5] Save  [F9] Load  [HELP] Commands", 10.0, screen_height() - 30.0, dos_hints);
+        }
     }
 
     fn draw_dialogue_overlay(&self, crt_x: f32, crt_y: f32) {
