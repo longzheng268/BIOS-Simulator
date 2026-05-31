@@ -117,16 +117,35 @@ impl Game {
                 self.vga.put_str("x86 BIOS Simulator", 15, 0);
                 self.vga.set_cursor(5, 22);
                 self.vga.put_str("==================", 8, 0);
-                self.vga.set_cursor(8, 25);
-                self.vga.put_str("[1] New Game", 7, 0);
-                self.vga.set_cursor(9, 25);
-                self.vga.put_str("[2] Continue", 7, 0);
-                self.vga.set_cursor(10, 25);
-                self.vga.put_str("[3] Demo Dialogue", 7, 0);
-                self.vga.set_cursor(12, 25);
-                self.vga.put_str("[F1] Language", 8, 0);
-                self.vga.set_cursor(14, 25);
-                self.vga.put_str("v0.1.0", 8, 0);
+
+                // Menu text: English in VGA, Chinese via CJK overlay (drawn later)
+                match self.language {
+                    Language::English => {
+                        self.vga.set_cursor(8, 25);
+                        self.vga.put_str("[1] New Game", 7, 0);
+                        self.vga.set_cursor(9, 25);
+                        self.vga.put_str("[2] Continue", 7, 0);
+                        self.vga.set_cursor(10, 25);
+                        self.vga.put_str("[3] Demo Dialogue", 7, 0);
+                        self.vga.set_cursor(12, 25);
+                        self.vga.put_str("[F1] Language", 8, 0);
+                        self.vga.set_cursor(14, 25);
+                        self.vga.put_str("v0.1.0", 8, 0);
+                    }
+                    Language::Chinese => {
+                        // VGA draws blank lines — CJK overlay draws Chinese text
+                        self.vga.set_cursor(8, 25);
+                        self.vga.put_str("            ", 0, 0);
+                        self.vga.set_cursor(9, 25);
+                        self.vga.put_str("            ", 0, 0);
+                        self.vga.set_cursor(10, 25);
+                        self.vga.put_str("            ", 0, 0);
+                        self.vga.set_cursor(12, 25);
+                        self.vga.put_str("            ", 0, 0);
+                        self.vga.set_cursor(14, 25);
+                        self.vga.put_str("            ", 0, 0);
+                    }
+                }
 
                 // F1 = Language toggle (only in menu)
                 if is_key_pressed(KeyCode::F1) {
