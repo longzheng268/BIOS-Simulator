@@ -121,39 +121,23 @@ impl Game {
         match self.state {
             AppState::PoweredOff => {
                 self.vga.clear(0, 0);
-                // Title
+                // Title (always English in VGA)
                 self.vga.set_cursor(4, 22);
                 self.vga.put_str("x86 BIOS Simulator", 15, 0);
                 self.vga.set_cursor(5, 22);
                 self.vga.put_str("==================", 8, 0);
 
-                // Menu — bilingual
-                match self.language {
-                    Language::Chinese => {
-                        self.vga.set_cursor(8, 25);
-                        self.vga.put_str("[1] 新游戏", 7, 0);
-                        self.vga.set_cursor(9, 25);
-                        self.vga.put_str("[2] 继续游戏", 7, 0);
-                        self.vga.set_cursor(10, 25);
-                        self.vga.put_str("[3] 演示对话", 7, 0);
-                        self.vga.set_cursor(12, 25);
-                        self.vga.put_str("[L] 语言: 中文", 8, 0);
-                        self.vga.set_cursor(14, 25);
-                        self.vga.put_str("v0.1.0  |  按 1-3 或点击", 8, 0);
-                    }
-                    Language::English => {
-                        self.vga.set_cursor(8, 25);
-                        self.vga.put_str("[1] New Game", 7, 0);
-                        self.vga.set_cursor(9, 25);
-                        self.vga.put_str("[2] Continue", 7, 0);
-                        self.vga.set_cursor(10, 25);
-                        self.vga.put_str("[3] Demo Dialogue", 7, 0);
-                        self.vga.set_cursor(12, 25);
-                        self.vga.put_str("[L] Language: English", 8, 0);
-                        self.vga.set_cursor(14, 25);
-                        self.vga.put_str("v0.1.0  |  Press 1-3 or click", 8, 0);
-                    }
-                }
+                // Menu (always English in VGA — CJK overlay shows translated text)
+                self.vga.set_cursor(8, 25);
+                self.vga.put_str("[1] New Game", 7, 0);
+                self.vga.set_cursor(9, 25);
+                self.vga.put_str("[2] Continue", 7, 0);
+                self.vga.set_cursor(10, 25);
+                self.vga.put_str("[3] Demo Dialogue", 7, 0);
+                self.vga.set_cursor(12, 25);
+                self.vga.put_str("[L] Language", 8, 0);
+                self.vga.set_cursor(14, 25);
+                self.vga.put_str("v0.1.0", 8, 0);
 
                 // Menu input
                 if is_key_pressed(KeyCode::Key1) || (is_mouse_button_pressed(MouseButton::Left) && self.vga.cursor_row >= 8 && self.vga.cursor_row <= 10) {
@@ -385,6 +369,20 @@ impl Game {
         self.vga.put_str("(C)Copyright Microsoft Corp 1981-1994.", 7, 0);
         self.vga.newline();
         self.vga.newline();
+
+        // Tutorial for first-time players
+        if !self.tasks.is_completed("boot_computer") {
+            self.vga.put_str("Welcome! This is your grandfather's old computer.", 14, 0);
+            self.vga.newline();
+            self.vga.put_str("Type HELP to see available commands.", 14, 0);
+            self.vga.newline();
+            self.vga.put_str("Type DIR to list files, TYPE README.TXT to read.", 14, 0);
+            self.vga.newline();
+            self.vga.put_str("Press R to explore the room around you.", 14, 0);
+            self.vga.newline();
+            self.vga.newline();
+        }
+
         self.dos.print_prompt(&mut self.vga);
         self.vga.cursor_visible = true;
     }
@@ -505,10 +503,27 @@ impl Game {
             }
         }
 
-        // Apply CRT shader overlay if available
-        if let Some(ref _crt) = self.crt {
-            // TODO: Apply CRT post-processing effect
-            // For now, direct render without CRT overlay
+        // CJK overlay for title menu (VGA can't render Chinese)
+        if self.state == AppState::PoweredOff && self.language == Language::Chinese {
+            let menu_params = TextParams {
+                font: Some(&self.font_cjk),
+                font_size: 20,
+                color: Color::new(1.0, 1.0, 1.0, 1.0),
+                ..Default::default()
+            };
+            let hint_cjk = TextParams {
+                font: Some(&self.font_cjk),
+                font_size: 16,
+                color: Color::new(0.5, 0.5, 0.5, 1.0),
+                ..Default::default()
+            };
+            let mx = crt_x + 25.0 * CHAR_WIDTH * CRT_SCALE;
+            let my = crt_y;
+            draw_text_ex("[1] 新游戏",      mx, my + 8.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
+            draw_text_ex("[2] 继续游戏",    mx, my + 9.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
+            draw_text_ex("[3] 演示对话",    mx, my + 10.0 * CHAR_HEIGHT * CRT_SCALE, menu_params.clone());
+            draw_text_ex("[L] 语言: 中文",  mx, my + 12.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk.clone());
+            draw_text_ex("按 1-3 或点击",   mx, my + 14.0 * CHAR_HEIGHT * CRT_SCALE, hint_cjk);
         }
 
         // Power LED
@@ -601,17 +616,12 @@ impl Game {
             ..Default::default()
         };
 
-        // Character name
+        // Character name — always from current language
         let char_name = self.dialogue.current_character(self.language);
         draw_text_ex(&char_name, box_x + 16.0, box_y + 24.0, name_params);
 
-        // Dialogue text
-        let text = self.dialogue.current_text(self.language);
-        let display = if self.dialogue.waiting_for_input {
-            text
-        } else {
-            self.dialogue.display_text.clone()
-        };
+        // Dialogue text — always from current language (ignore typewriter for now)
+        let display = self.dialogue.current_text(self.language);
 
         // Word-wrap text in the dialogue box
         let max_w = box_w - 32.0;

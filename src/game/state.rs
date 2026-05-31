@@ -128,47 +128,47 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
     let upper = filename.to_uppercase();
     match upper.as_str() {
         "README.TXT" | "README" => {
-            vga.put_str("致使用这台电脑的人：", 7, 0);
+            vga.put_str("To whoever uses this computer:", 7, 0);
             vga.newline();
-            vga.put_str("如果你能看到这段话，说明你已经成功启动了这台老电脑。", 7, 0);
+            vga.put_str("If you can see this, you've booted the old PC.", 7, 0);
             vga.newline();
-            vga.put_str("这台电脑里保存着一些重要的东西。", 7, 0);
+            vga.put_str("There are important things stored here.", 7, 0);
             vga.newline();
-            vga.put_str("请仔细查看 DISK_01 软盘中的文件。", 7, 0);
+            vga.put_str("Check the files on floppy DISK_01.", 7, 0);
             vga.newline();
-            vga.put_str("里面有一封信。", 7, 0);
+            vga.put_str("There is a letter inside.", 7, 0);
             vga.newline();
-            vga.put_str("记得：不要格式化 C 盘。", 7, 0);
+            vga.put_str("Remember: Do NOT format the C drive.", 14, 0);
             vga.newline();
-            vga.put_str("                    —— 王志远", 7, 0);
+            vga.put_str("                    -- Wang Zhiyuan", 7, 0);
             vga.newline();
-            vga.put_str("                    1998 年 6 月 15 日", 7, 0);
+            vga.put_str("                    June 15, 1998", 7, 0);
         }
         "LETTER.TXT" | "LETTER" => {
-            vga.put_str("亲爱的孩子：", 7, 0);
+            vga.put_str("Dear child:", 7, 0);
             vga.newline();
-            vga.put_str("如果你在读这封信，说明我不在了。", 7, 0);
+            vga.put_str("If you are reading this, I am gone.", 7, 0);
             vga.newline();
-            vga.put_str("有些事情，我必须告诉你……", 7, 0);
+            vga.put_str("There are things I must tell you...", 7, 0);
             vga.newline();
-            vga.put_str("这台电脑里藏着一个秘密。", 7, 0);
+            vga.put_str("This computer hides a secret.", 7, 0);
             vga.newline();
-            vga.put_str("不是什么宝藏，而是一段真相。", 7, 0);
+            vga.put_str("Not treasure, but truth.", 7, 0);
             vga.newline();
-            vga.put_str("关于我工作过的那家公司，", 7, 0);
+            vga.put_str("About the company I worked for,", 7, 0);
             vga.newline();
-            vga.put_str("关于那些被掩盖的事实。", 7, 0);
+            vga.put_str("about the facts that were covered up.", 7, 0);
             vga.newline();
-            vga.put_str("                    —— 外公", 7, 0);
+            vga.put_str("                    -- Grandpa", 7, 0);
         }
         "DIARY.TXT" | "DIARY" => {
-            vga.put_str("1998年3月15日，晴。", 7, 0);
+            vga.put_str("March 15, 1998. Clear.", 7, 0);
             vga.newline();
-            vga.put_str("今天是我在新思游戏工作室上班的第一天。", 7, 0);
+            vga.put_str("My first day at Xinsi Game Studio.", 7, 0);
             vga.newline();
-            vga.put_str("公司虽然不大，但氛围很好。", 7, 0);
+            vga.put_str("The company is small but the atmosphere is great.", 7, 0);
             vga.newline();
-            vga.put_str("李总看起来是个很有魄力的人。", 7, 0);
+            vga.put_str("Director Li seems like a man of great drive.", 7, 0);
         }
         "EVIDENCE.BIN" | "EVIDENCE" => {
             vga.put_str("[ENCRYPTED DATA - DECRYPTION REQUIRED]", 4, 0);
@@ -176,17 +176,17 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
             vga.put_str("Use INT 13h debugger to decode sectors 200-210", 8, 0);
         }
         "FINAL.TXT" | "FINAL" => {
-            vga.put_str("调查结束了。", 7, 0);
+            vga.put_str("The investigation is over.", 7, 0);
             vga.newline();
-            vga.put_str("李德胜找了个替罪羊，自己全身而退。", 7, 0);
+            vga.put_str("Li Desheng found a scapegoat and walked free.", 7, 0);
             vga.newline();
-            vga.put_str("我知道这些证据总有一天会派上用场。", 7, 0);
+            vga.put_str("I know this evidence will be useful someday.", 7, 0);
             vga.newline();
-            vga.put_str("我把它们加密保存在磁盘的隐藏分区里。", 7, 0);
+            vga.put_str("I've encrypted it in a hidden disk partition.", 7, 0);
             vga.newline();
-            vga.put_str("如果有一天我的后人能找到这些……", 7, 0);
+            vga.put_str("If someday my descendants find this...", 7, 0);
             vga.newline();
-            vga.put_str("请让真相大白于天下。", 7, 0);
+            vga.put_str("Please let the truth come to light.", 14, 0);
         }
         _ => {
             vga.put_str("File not found", 7, 0);

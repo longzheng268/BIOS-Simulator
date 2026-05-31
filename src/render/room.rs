@@ -41,22 +41,82 @@ pub struct Room {
 
 impl Room {
     pub fn new() -> Self {
-        // Define interactive hotspots (relative to room origin)
+        // Hotspots ordered SMALL→LARGE so click() returns the most specific match.
         let hotspots = vec![
+            // Small objects first (most specific)
+            Hotspot {
+                id: "lamp".to_string(),
+                x: 340.0, y: 160.0, w: 40.0, h: 80.0,
+                label_zh: "台灯".to_string(),
+                label_en: "Desk Lamp".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "notebook".to_string(),
+                x: 500.0, y: 430.0, w: 80.0, h: 30.0,
+                label_zh: "笔记本".to_string(),
+                label_en: "Notebook".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "floppy_box".to_string(),
+                x: 820.0, y: 430.0, w: 60.0, h: 30.0,
+                label_zh: "软盘盒".to_string(),
+                label_en: "Floppy Box".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "telephone".to_string(),
+                x: 700.0, y: 500.0, w: 80.0, h: 40.0,
+                label_zh: "电话".to_string(),
+                label_en: "Telephone".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "drawer".to_string(),
+                x: 400.0, y: 560.0, w: 200.0, h: 60.0,
+                label_zh: "抽屉".to_string(),
+                label_en: "Drawer".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "keyboard".to_string(),
+                x: 480.0, y: 480.0, w: 320.0, h: 40.0,
+                label_zh: "键盘".to_string(),
+                label_en: "Keyboard".to_string(),
+                hover: false,
+            },
+            // Monitor screen area only (not the full bezel)
             Hotspot {
                 id: "monitor".to_string(),
-                x: 400.0, y: 100.0, w: 480.0, h: 360.0,
+                x: 490.0, y: 130.0, w: 300.0, h: 240.0,
                 label_zh: "CRT 显示器".to_string(),
                 label_en: "CRT Monitor".to_string(),
                 hover: false,
             },
             Hotspot {
-                id: "keyboard".to_string(),
-                x: 420.0, y: 480.0, w: 440.0, h: 60.0,
-                label_zh: "键盘".to_string(),
-                label_en: "Keyboard".to_string(),
+                id: "poster".to_string(),
+                x: 620.0, y: 80.0, w: 120.0, h: 160.0,
+                label_zh: "海报".to_string(),
+                label_en: "Poster".to_string(),
                 hover: false,
             },
+            // Medium objects
+            Hotspot {
+                id: "calendar".to_string(),
+                x: 180.0, y: 100.0, w: 100.0, h: 120.0,
+                label_zh: "日历".to_string(),
+                label_en: "Calendar".to_string(),
+                hover: false,
+            },
+            Hotspot {
+                id: "cabinet".to_string(),
+                x: 950.0, y: 400.0, w: 100.0, h: 200.0,
+                label_zh: "柜子".to_string(),
+                label_en: "Cabinet".to_string(),
+                hover: false,
+            },
+            // Large areas last
             Hotspot {
                 id: "bookshelf".to_string(),
                 x: 40.0, y: 80.0, w: 120.0, h: 400.0,
@@ -71,62 +131,6 @@ impl Room {
                 label_en: "Window".to_string(),
                 hover: false,
             },
-            Hotspot {
-                id: "drawer".to_string(),
-                x: 400.0, y: 560.0, w: 200.0, h: 80.0,
-                label_zh: "抽屉".to_string(),
-                label_en: "Drawer".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "lamp".to_string(),
-                x: 340.0, y: 200.0, w: 40.0, h: 120.0,
-                label_zh: "台灯".to_string(),
-                label_en: "Desk Lamp".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "telephone".to_string(),
-                x: 700.0, y: 500.0, w: 80.0, h: 60.0,
-                label_zh: "电话".to_string(),
-                label_en: "Telephone".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "calendar".to_string(),
-                x: 180.0, y: 100.0, w: 100.0, h: 120.0,
-                label_zh: "日历".to_string(),
-                label_en: "Calendar".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "poster".to_string(),
-                x: 620.0, y: 80.0, w: 120.0, h: 160.0,
-                label_zh: "海报".to_string(),
-                label_en: "Poster".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "notebook".to_string(),
-                x: 500.0, y: 430.0, w: 80.0, h: 50.0,
-                label_zh: "笔记本".to_string(),
-                label_en: "Notebook".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "floppy_box".to_string(),
-                x: 820.0, y: 430.0, w: 60.0, h: 40.0,
-                label_zh: "软盘盒".to_string(),
-                label_en: "Floppy Box".to_string(),
-                hover: false,
-            },
-            Hotspot {
-                id: "cabinet".to_string(),
-                x: 950.0, y: 400.0, w: 100.0, h: 200.0,
-                label_zh: "柜子".to_string(),
-                label_en: "Cabinet".to_string(),
-                hover: false,
-            },
         ];
 
         Self {
@@ -137,31 +141,52 @@ impl Room {
         }
     }
 
-    /// Update hover state based on mouse position
+    /// Update hover state — highlight the smallest matching hotspot
     pub fn update(&mut self, mx: f32, my: f32) {
-        // Adjust mouse position for room offset
         let rx = mx - self.offset_x;
         let ry = my - self.offset_y;
 
-        self.hovered_id = None;
+        // Reset all hover states
         for hs in &mut self.hotspots {
-            hs.hover = hs.contains(rx, ry);
-            if hs.hover {
-                self.hovered_id = Some(hs.id.clone());
+            hs.hover = false;
+        }
+        self.hovered_id = None;
+
+        // Find the smallest matching hotspot (most specific)
+        let mut best_area = f32::MAX;
+        let mut best_idx = None;
+        for (i, hs) in self.hotspots.iter().enumerate() {
+            if hs.contains(rx, ry) {
+                let area = hs.w * hs.h;
+                if area < best_area {
+                    best_area = area;
+                    best_idx = Some(i);
+                }
             }
+        }
+        if let Some(idx) = best_idx {
+            self.hotspots[idx].hover = true;
+            self.hovered_id = Some(self.hotspots[idx].id.clone());
         }
     }
 
-    /// Check if a hotspot was clicked
+    /// Check if a hotspot was clicked — returns the smallest matching hotspot
     pub fn clicked(&self, mx: f32, my: f32) -> Option<String> {
         let rx = mx - self.offset_x;
         let ry = my - self.offset_y;
+
+        let mut best_area = f32::MAX;
+        let mut best_id = None;
         for hs in &self.hotspots {
             if hs.contains(rx, ry) {
-                return Some(hs.id.clone());
+                let area = hs.w * hs.h;
+                if area < best_area {
+                    best_area = area;
+                    best_id = Some(hs.id.clone());
+                }
             }
         }
-        None
+        best_id
     }
 
     /// Draw the room scene
