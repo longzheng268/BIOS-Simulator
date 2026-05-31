@@ -1,0 +1,18 @@
+[package]
+name = "bios-simulator"
+version = "0.1.0"
+edition = "2021"
+description = "x86 BIOS Simulator — A narrative puzzle game set in a 1998-era PC"
+license = "MIT"
+
+[dependencies]
+macroquad = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+hound = "3.5"
+rand = "0.8"
+
+[profile.release]
+opt-level = 3
+lto = true
+strip = true
