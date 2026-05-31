@@ -7,19 +7,14 @@ use crate::render::vga::VgaBuffer;
 /// Result of executing a DOS command — tells the game loop what happened
 #[derive(Debug, Clone)]
 pub enum CommandResult {
-    /// Normal output, no special event
     None,
-    /// Player read a story file — trigger dialogue chapter
+    /// Player ran DIR — tutorial trigger
+    Dir,
     ReadFile { chapter: String, file: String },
-    /// Player discovered hidden data — unlock task
     DiscoverTask(String),
-    /// Player completed a task
     CompleteTask(String),
-    /// Player found a floppy disk
     CollectFloppy(String),
-    /// Player triggered the bad ending
     BadEnding,
-    /// Player wants to return to room
     ExitToRoom,
 }
 
@@ -84,7 +79,7 @@ impl DosState {
         let args = if parts.len() > 1 { parts[1].trim() } else { "" };
 
         match command.as_str() {
-            "DIR" => { cmd_dir(vga, args); CommandResult::None }
+            "DIR" => { cmd_dir(vga, args); CommandResult::Dir }
             "TYPE" => cmd_type(vga, args, &mut self.files_read),
             "CD" | "CHDIR" => { cmd_cd(vga, args); CommandResult::None }
             "CLS" => { vga.clear(7, 0); CommandResult::None }

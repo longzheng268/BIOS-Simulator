@@ -13,9 +13,10 @@ use render::vga::{VgaBuffer, VgaRenderer};
 use render::crt::CrtEffect;
 use render::room::Room;
 use game::dialogue::DialogueEngine;
-use game::state::DosState;
+use game::state::{DosState, CommandResult};
 use game::task::TaskSystem;
 use game::save::SaveManager;
+use game::tutorial::{Tutorial, TutorialStep};
 use audio::player::AudioPlayer;
 
 /// Game application states
@@ -39,6 +40,7 @@ struct Game {
     dos: DosState,
     tasks: TaskSystem,
     saves: SaveManager,
+    tutorial: Tutorial,
     cursor_blink: bool,
     post_progress: usize,
     play_time: f64,
@@ -82,6 +84,7 @@ impl Game {
             dos: DosState::new(),
             tasks: TaskSystem::new(),
             saves: SaveManager::new(),
+            tutorial: Tutorial::new(),
             cursor_blink: true,
             post_progress: 0,
             play_time: 0.0,
@@ -201,6 +204,7 @@ impl Game {
                 self.update_cursor_blink();
                 // F3 = Enter room exploration
                 if is_key_pressed(KeyCode::F3) {
+                    self.tutorial.on_enter_room();
                     self.state = AppState::Room;
                 }
                 // F1 = Language toggle
@@ -287,10 +291,10 @@ impl Game {
                                 self.state = AppState::Dialogue;
                             }
                             "drawer" => {
-                                // Drawer contains a floppy disk
                                 self.tasks.discover("collect_disk_01");
                                 self.tasks.collect_floppy("DISK_01");
                                 self.tasks.complete("collect_disk_01");
+                                self.tutorial.on_find_floppy();
                                 // Show a brief message
                                 self.vga.clear(7, 0);
                                 self.vga.set_cursor(12, 20);
@@ -348,6 +352,7 @@ impl Game {
                     }
                 }
                 if is_key_pressed(KeyCode::Escape) {
+                    self.tutorial.on_return_dos();
                     self.state = AppState::DosCli;
                     self.setup_dos_cli();
                 }
@@ -384,17 +389,14 @@ impl Game {
         self.vga.newline();
         self.vga.newline();
 
-        // Tutorial for first-time players
-        if !self.tasks.is_completed("boot_computer") {
-            self.vga.put_str("Welcome! This is your grandfather's old computer.", 14, 0);
+        // Show tutorial hint
+        if let Some(hint) = self.tutorial.hint(self.language) {
+            for line in hint.split('\n') {
+                self.vga.put_str(line, 14, 0);
+                self.vga.newline();
+            }
             self.vga.newline();
-            self.vga.put_str("Type HELP to see available commands.", 14, 0);
-            self.vga.newline();
-            self.vga.put_str("Type DIR to list files, TYPE README.TXT to read.", 14, 0);
-            self.vga.newline();
-            self.vga.put_str("Press R to explore the room around you.", 14, 0);
-            self.vga.newline();
-            self.vga.newline();
+            self.tutorial.mark_shown();
         }
 
         self.dos.print_prompt(&mut self.vga);
@@ -415,12 +417,13 @@ impl Game {
             let result = self.dos.execute(&mut self.vga);
             match result {
                 CommandResult::ReadFile { chapter, file } => {
-                    // Player read a story file — trigger dialogue after a pause
                     self.tasks.discover("read_readme");
                     if file == "README.TXT" {
                         self.tasks.complete("read_readme");
+                        self.tutorial.on_read_readme();
+                    } else {
+                        self.tutorial.on_read_other();
                     }
-                    // Show "Loading..." then start dialogue
                     self.vga.newline();
                     self.vga.put_str("[Loading file into memory...]", 8, 0);
                     self.dialogue.start_chapter(&chapter);
@@ -441,6 +444,9 @@ impl Game {
                 }
                 CommandResult::ExitToRoom => {
                     self.state = AppState::Room;
+                }
+                CommandResult::Dir => {
+                    self.tutorial.on_dir();
                 }
                 CommandResult::None => {}
             }
