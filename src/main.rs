@@ -402,16 +402,48 @@ impl Game {
     }
 
     fn handle_dos_input(&mut self) {
-        // Process typed characters
+        use game::state::CommandResult;
+
         while let Some(ch) = get_char_pressed() {
             if ch.is_ascii() && !ch.is_control() {
                 self.dos.input_char(ch);
                 self.vga.put_char(ch as u8, 7, 0);
             }
         }
-        // Execute command on Enter
+        // Execute command on Enter — handle result
         if is_key_pressed(KeyCode::Enter) {
-            self.dos.execute(&mut self.vga);
+            let result = self.dos.execute(&mut self.vga);
+            match result {
+                CommandResult::ReadFile { chapter, file } => {
+                    // Player read a story file — trigger dialogue after a pause
+                    self.tasks.discover("read_readme");
+                    if file == "README.TXT" {
+                        self.tasks.complete("read_readme");
+                    }
+                    // Show "Loading..." then start dialogue
+                    self.vga.newline();
+                    self.vga.put_str("[Loading file into memory...]", 8, 0);
+                    self.dialogue.start_chapter(&chapter);
+                    self.play_current_dialogue_audio();
+                    self.state = AppState::Dialogue;
+                }
+                CommandResult::DiscoverTask(task_id) => {
+                    self.tasks.discover(&task_id);
+                }
+                CommandResult::CompleteTask(task_id) => {
+                    self.tasks.complete(&task_id);
+                }
+                CommandResult::CollectFloppy(disk_id) => {
+                    self.tasks.collect_floppy(&disk_id);
+                }
+                CommandResult::BadEnding => {
+                    // TODO: trigger bad ending scene
+                }
+                CommandResult::ExitToRoom => {
+                    self.state = AppState::Room;
+                }
+                CommandResult::None => {}
+            }
         }
         // Backspace
         if is_key_pressed(KeyCode::Backspace) {

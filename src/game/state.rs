@@ -1,15 +1,34 @@
 // DOS command parser — handles player input at the C:\> prompt
 //
-// Supported commands: dir, type, cd, cls, help, ver, echo, date, time
-// Integrates with the virtual filesystem to display file contents.
+// Commands return CommandResult to trigger game events.
 
 use crate::render::vga::VgaBuffer;
+
+/// Result of executing a DOS command — tells the game loop what happened
+#[derive(Debug, Clone)]
+pub enum CommandResult {
+    /// Normal output, no special event
+    None,
+    /// Player read a story file — trigger dialogue chapter
+    ReadFile { chapter: String, file: String },
+    /// Player discovered hidden data — unlock task
+    DiscoverTask(String),
+    /// Player completed a task
+    CompleteTask(String),
+    /// Player found a floppy disk
+    CollectFloppy(String),
+    /// Player triggered the bad ending
+    BadEnding,
+    /// Player wants to return to room
+    ExitToRoom,
+}
 
 /// Current DOS state
 pub struct DosState {
     pub current_dir: String,
     pub command_buffer: String,
     pub history: Vec<String>,
+    pub files_read: Vec<String>,
 }
 
 impl DosState {
@@ -18,6 +37,7 @@ impl DosState {
             current_dir: "C:\\".to_string(),
             command_buffer: String::new(),
             history: Vec::new(),
+            files_read: Vec::new(),
         }
     }
 
@@ -33,8 +53,8 @@ impl DosState {
         self.command_buffer.pop();
     }
 
-    /// Execute the current command buffer
-    pub fn execute(&mut self, vga: &mut VgaBuffer) {
+    /// Execute the current command buffer — returns result for game loop
+    pub fn execute(&mut self, vga: &mut VgaBuffer) -> CommandResult {
         let cmd = self.command_buffer.trim().to_string();
         self.history.push(cmd.clone());
         self.command_buffer.clear();
@@ -42,13 +62,14 @@ impl DosState {
         if cmd.is_empty() {
             vga.newline();
             self.print_prompt(vga);
-            return;
+            return CommandResult::None;
         }
 
         vga.newline();
-        self.run_command(&cmd, vga);
+        let result = self.run_command(&cmd, vga);
         vga.newline();
         self.print_prompt(vga);
+        result
     }
 
     /// Print the DOS prompt
@@ -56,33 +77,32 @@ impl DosState {
         vga.put_str(&format!("{}>", self.current_dir), 7, 0);
     }
 
-    /// Run a DOS command
-    fn run_command(&self, cmd: &str, vga: &mut VgaBuffer) {
+    /// Run a DOS command — returns result for game loop
+    fn run_command(&mut self, cmd: &str, vga: &mut VgaBuffer) -> CommandResult {
         let parts: Vec<&str> = cmd.splitn(2, ' ').collect();
         let command = parts[0].to_uppercase();
         let args = if parts.len() > 1 { parts[1].trim() } else { "" };
 
         match command.as_str() {
-            "DIR" => cmd_dir(vga, args),
-            "TYPE" => cmd_type(vga, args),
-            "CD" | "CHDIR" => cmd_cd(vga, args),
-            "CLS" => vga.clear(7, 0),
-            "HELP" | "?" => cmd_help(vga),
-            "VER" => cmd_ver(vga),
-            "ECHO" => cmd_echo(vga, args),
-            "DATE" => cmd_date(vga),
-            "TIME" => cmd_time(vga),
-            "VOL" => cmd_vol(vga),
-            "MEM" => cmd_mem(vga),
+            "DIR" => { cmd_dir(vga, args); CommandResult::None }
+            "TYPE" => cmd_type(vga, args, &mut self.files_read),
+            "CD" | "CHDIR" => { cmd_cd(vga, args); CommandResult::None }
+            "CLS" => { vga.clear(7, 0); CommandResult::None }
+            "HELP" | "?" => { cmd_help(vga); CommandResult::None }
+            "VER" => { cmd_ver(vga); CommandResult::None }
+            "ECHO" => { cmd_echo(vga, args); CommandResult::None }
+            "DATE" => { cmd_date(vga); CommandResult::None }
+            "TIME" => { cmd_time(vga); CommandResult::None }
+            "VOL" => { cmd_vol(vga); CommandResult::None }
+            "MEM" => { cmd_mem(vga); CommandResult::None }
             "FORMAT" => cmd_format(vga, args),
             "DEBUG" => cmd_debug(vga),
-            "FDISK" => cmd_fdisk(vga),
-            "TREE" => cmd_tree(vga),
-            "COLOR" => cmd_color(vga, args),
-            "PROMPT" => cmd_prompt(vga, args),
-            "EXIT" => cmd_exit(vga),
+            "FDISK" => { cmd_fdisk(vga); CommandResult::DiscoverTask("learn_int13h".to_string()) }
+            "TREE" => { cmd_tree(vga); CommandResult::None }
+            "EXIT" => { CommandResult::ExitToRoom }
             _ => {
-                vga.put_str(&format!("Bad command or file name"), 7, 0);
+                vga.put_str("Bad command or file name", 7, 0);
+                CommandResult::None
             }
         }
     }
@@ -119,14 +139,14 @@ fn cmd_dir(vga: &mut VgaBuffer, _args: &str) {
     vga.put_str("        0 dir(s)      1,457,664 bytes free", 7, 0);
 }
 
-fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
+fn cmd_type(vga: &mut VgaBuffer, filename: &str, files_read: &mut Vec<String>) -> CommandResult {
     if filename.is_empty() {
         vga.put_str("Required parameter missing", 7, 0);
-        return;
+        return CommandResult::None;
     }
 
     let upper = filename.to_uppercase();
-    match upper.as_str() {
+    let result = match upper.as_str() {
         "README.TXT" | "README" => {
             vga.put_str("To whoever uses this computer:", 7, 0);
             vga.newline();
@@ -143,6 +163,10 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
             vga.put_str("                    -- Wang Zhiyuan", 7, 0);
             vga.newline();
             vga.put_str("                    June 15, 1998", 7, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_1_player_monologue".to_string(),
+                file: "README.TXT".to_string(),
+            }
         }
         "LETTER.TXT" | "LETTER" => {
             vga.put_str("Dear child:", 7, 0);
@@ -160,6 +184,10 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
             vga.put_str("about the facts that were covered up.", 7, 0);
             vga.newline();
             vga.put_str("                    -- Grandpa", 7, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_2_grandfather_voice".to_string(),
+                file: "LETTER.TXT".to_string(),
+            }
         }
         "DIARY.TXT" | "DIARY" => {
             vga.put_str("March 15, 1998. Clear.", 7, 0);
@@ -169,11 +197,18 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
             vga.put_str("The company is small but the atmosphere is great.", 7, 0);
             vga.newline();
             vga.put_str("Director Li seems like a man of great drive.", 7, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_3_documents".to_string(),
+                file: "DIARY.TXT".to_string(),
+            }
         }
         "EVIDENCE.BIN" | "EVIDENCE" => {
             vga.put_str("[ENCRYPTED DATA - DECRYPTION REQUIRED]", 4, 0);
             vga.newline();
-            vga.put_str("Use INT 13h debugger to decode sectors 200-210", 8, 0);
+            vga.put_str("Use DEBUG command to access INT 13h debugger.", 8, 0);
+            vga.newline();
+            vga.put_str("Read sectors 200-210 to decode this file.", 8, 0);
+            CommandResult::DiscoverTask("decrypt_evidence".to_string())
         }
         "FINAL.TXT" | "FINAL" => {
             vga.put_str("The investigation is over.", 7, 0);
@@ -187,11 +222,23 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str) {
             vga.put_str("If someday my descendants find this...", 7, 0);
             vga.newline();
             vga.put_str("Please let the truth come to light.", 14, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_8_endings".to_string(),
+                file: "FINAL.TXT".to_string(),
+            }
         }
         _ => {
             vga.put_str("File not found", 7, 0);
+            CommandResult::None
         }
+    };
+
+    // Track which files have been read
+    if !files_read.contains(&upper) {
+        files_read.push(upper);
     }
+
+    result
 }
 
 fn cmd_cd(vga: &mut VgaBuffer, args: &str) {
@@ -246,9 +293,8 @@ fn cmd_mem(vga: &mut VgaBuffer) {
     vga.put_str("Total memory    16,384K  2,635K 13,759K", 7, 0);
 }
 
-fn cmd_format(vga: &mut VgaBuffer, args: &str) {
+fn cmd_format(vga: &mut VgaBuffer, args: &str) -> CommandResult {
     if args.to_uppercase().contains("C:") || args.to_uppercase().contains("C") {
-        // Bad ending trigger!
         vga.put_str("WARNING: ALL DATA ON NON-REMOVABLE DISK", 12, 0);
         vga.newline();
         vga.put_str("DRIVE C: WILL BE LOST!", 12, 0);
@@ -259,17 +305,19 @@ fn cmd_format(vga: &mut VgaBuffer, args: &str) {
         vga.put_str("... just kidding. Don't do that.", 8, 0);
         vga.newline();
         vga.put_str("Remember: Do not format C drive.", 14, 0);
+        CommandResult::None
     } else {
         vga.put_str("Required parameter missing", 7, 0);
         vga.newline();
         vga.put_str("Usage: FORMAT drive:", 7, 0);
+        CommandResult::None
     }
 }
 
-fn cmd_debug(vga: &mut VgaBuffer) {
+fn cmd_debug(vga: &mut VgaBuffer) -> CommandResult {
     vga.put_str("INT 13h Disk Debugger", 14, 0);
     vga.newline();
-    vga.put_str("═══════════════════════════════════════", 8, 0);
+    vga.put_str("=========================================", 8, 0);
     vga.newline();
     vga.put_str("AX=0201  Read Sector", 7, 0);
     vga.newline();
@@ -279,21 +327,26 @@ fn cmd_debug(vga: &mut VgaBuffer) {
     vga.newline();
     vga.put_str("  CH=00  Cylinder: 0", 7, 0);
     vga.newline();
-    vga.put_str("  CL=01  Sector: 1", 7, 0);
+    vga.put_str("  CL=C8  Sector: 200 (0xC8)", 14, 0);
     vga.newline();
     vga.put_str("  DH=00  Head: 0", 7, 0);
     vga.newline();
     vga.put_str("  DL=80  Drive: C:", 7, 0);
     vga.newline();
     vga.newline();
-    vga.put_str("Example: Read sector 200 from C:", 8, 0);
+    vga.put_str("Reading sector 200...", 7, 0);
     vga.newline();
-    vga.put_str("  AX=0201 CH=00 CL=C8 DH=00 DL=80", 14, 0);
+    vga.put_str("FOUND: $3,000,000 transfer record", 14, 0);
+    vga.newline();
+    vga.put_str("Recipient: Li Desheng", 14, 0);
+    vga.newline();
+    vga.put_str("Memo: 'Technical consulting fee'", 12, 0);
     vga.newline();
     vga.newline();
-    vga.put_str("Sector 200 (0xC8) contains hidden data.", 7, 0);
+    vga.put_str("This is evidence of embezzlement.", 7, 0);
     vga.newline();
-    vga.put_str("Try: type EVIDENCE.BIN after reading.", 8, 0);
+    vga.put_str("Type EVIDENCE.BIN for full details.", 8, 0);
+    CommandResult::CompleteTask("recover_sector_200".to_string())
 }
 
 fn cmd_fdisk(vga: &mut VgaBuffer) {
