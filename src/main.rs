@@ -10,7 +10,9 @@ mod audio;
 use macroquad::prelude::*;
 use config::*;
 use render::vga::{VgaBuffer, VgaRenderer};
+use render::crt::CrtEffect;
 use game::dialogue::DialogueEngine;
+use audio::player::AudioPlayer;
 
 /// Game application states
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,10 +30,12 @@ struct Game {
     state: AppState,
     vga: VgaBuffer,
     vga_renderer: VgaRenderer,
+    crt: CrtEffect,
     cursor_blink: bool,
     post_progress: usize,
     language: config::Language,
     dialogue: DialogueEngine,
+    audio: AudioPlayer,
     last_time: f64,
     font_cjk: Font,
 }
@@ -52,14 +56,20 @@ impl Game {
             .await
             .expect("Failed to load MiSans-Normal.ttf");
 
+        // Create CRT shader effect
+        let crt = CrtEffect::new(CRT_CONTENT_W as u32, CRT_CONTENT_H as u32)
+            .expect("Failed to create CRT effect");
+
         Self {
             state: AppState::PoweredOff,
             vga,
             vga_renderer: VgaRenderer::new(),
+            crt,
             cursor_blink: true,
             post_progress: 0,
             language: config::Language::default(),
             dialogue,
+            audio: AudioPlayer::new(),
             last_time: macroquad::time::get_time(),
             font_cjk,
         }
@@ -188,23 +198,24 @@ impl Game {
             Color::new(0.15, 0.15, 0.15, 1.0),
         );
 
-        // CRT screen background
-        draw_rectangle(crt_x, crt_y, CRT_CONTENT_W, CRT_CONTENT_H, BLACK);
+        // Begin CRT off-screen pass
+        self.crt.begin_pass();
 
         match self.state {
             AppState::Dialogue => {
-                // Draw dialogue scene: VGA background + dialogue overlay
-                self.vga_renderer.draw(&self.vga, crt_x, crt_y, CRT_SCALE, false, false);
-                self.draw_dialogue_overlay(crt_x, crt_y);
+                self.vga_renderer.draw(&self.vga, 0.0, 0.0, CRT_SCALE, false, false);
+                self.draw_dialogue_overlay(0.0, 0.0);
             }
             _ => {
-                // Normal VGA terminal
                 self.vga_renderer.draw(
-                    &self.vga, crt_x, crt_y, CRT_SCALE,
+                    &self.vga, 0.0, 0.0, CRT_SCALE,
                     self.vga.cursor_visible, self.cursor_blink,
                 );
             }
         }
+
+        // End CRT pass and draw with shader effect
+        self.crt.end_pass_and_draw(crt_x, crt_y, CRT_CONTENT_W, CRT_CONTENT_H);
 
         // Power LED
         let led_color = match self.state {
