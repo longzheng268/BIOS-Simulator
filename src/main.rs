@@ -94,6 +94,7 @@ impl Game {
         if is_key_pressed(KeyCode::D) && self.state != AppState::Dialogue {
             println!("Starting dialogue demo...");
             self.dialogue.start_chapter("chapter_1_player_monologue");
+            self.play_current_dialogue_audio();
             self.state = AppState::Dialogue;
         }
 
@@ -144,13 +145,17 @@ impl Game {
                 self.dialogue.update(dt);
                 if is_key_pressed(KeyCode::Enter) || is_key_pressed(KeyCode::Space) {
                     self.dialogue.advance();
-                    if !self.dialogue.is_active {
+                    if self.dialogue.is_active {
+                        self.play_current_dialogue_audio();
+                    } else {
+                        self.audio.stop();
                         self.state = AppState::DosCli;
                         self.setup_dos_cli();
                     }
                 }
                 if is_key_pressed(KeyCode::Escape) {
                     self.dialogue.skip();
+                    self.audio.stop();
                     self.state = AppState::DosCli;
                     self.setup_dos_cli();
                 }
@@ -193,6 +198,23 @@ impl Game {
     fn update_cursor_blink(&mut self) {
         let now = macroquad::time::get_time();
         self.cursor_blink = ((now * 1000.0) as u64 / CURSOR_BLINK_MS % 2) == 0;
+    }
+
+    /// Queue the audio file for the current dialogue segment
+    fn play_current_dialogue_audio(&mut self) {
+        if let Some(ref chapter_key) = self.dialogue.current_chapter {
+            let ck = chapter_key.clone();
+            if let Some(ref script) = self.dialogue.script {
+                if let Some(chapter) = script.chapters.get(ck.as_str()) {
+                    if let Some(segment) = chapter.segments.get(self.dialogue.current_segment_index) {
+                        let path = AudioPlayer::dialogue_audio_path(
+                            ck.as_str(), &segment.id, self.language,
+                        );
+                        self.audio.request_play(&path);
+                    }
+                }
+            }
+        }
     }
 
     fn draw(&self) {
@@ -331,6 +353,7 @@ async fn main() {
 
     loop {
         game.update();
+        game.audio.update().await;
         game.draw();
         next_frame().await;
     }

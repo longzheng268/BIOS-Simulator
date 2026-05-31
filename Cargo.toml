@@ -6,7 +6,7 @@ description = "x86 BIOS Simulator — A narrative puzzle game set in a 1998-era 
 license = "MIT"
 
 [dependencies]
-macroquad = "0.4"
+macroquad = { version = "0.4", features = ["audio"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 hound = "3.5"
