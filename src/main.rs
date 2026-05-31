@@ -126,21 +126,34 @@ impl Game {
                 self.vga.put_str("x86 BIOS Simulator", 15, 0);
                 self.vga.set_cursor(5, 22);
                 self.vga.put_str("==================", 8, 0);
-                // Menu
-                self.vga.set_cursor(8, 25);
-                self.vga.put_str("[1] New Game", 7, 0);
-                self.vga.set_cursor(9, 25);
-                self.vga.put_str("[2] Continue", 7, 0);
-                self.vga.set_cursor(10, 25);
-                self.vga.put_str("[3] Demo Dialogue", 7, 0);
-                self.vga.set_cursor(12, 25);
-                self.vga.put_str("[L] Language: ", 8, 0);
+
+                // Menu — bilingual
                 match self.language {
-                    Language::Chinese => self.vga.put_str("Chinese", 14, 0),
-                    Language::English => self.vga.put_str("English", 14, 0),
+                    Language::Chinese => {
+                        self.vga.set_cursor(8, 25);
+                        self.vga.put_str("[1] 新游戏", 7, 0);
+                        self.vga.set_cursor(9, 25);
+                        self.vga.put_str("[2] 继续游戏", 7, 0);
+                        self.vga.set_cursor(10, 25);
+                        self.vga.put_str("[3] 演示对话", 7, 0);
+                        self.vga.set_cursor(12, 25);
+                        self.vga.put_str("[L] 语言: 中文", 8, 0);
+                        self.vga.set_cursor(14, 25);
+                        self.vga.put_str("v0.1.0  |  按 1-3 或点击", 8, 0);
+                    }
+                    Language::English => {
+                        self.vga.set_cursor(8, 25);
+                        self.vga.put_str("[1] New Game", 7, 0);
+                        self.vga.set_cursor(9, 25);
+                        self.vga.put_str("[2] Continue", 7, 0);
+                        self.vga.set_cursor(10, 25);
+                        self.vga.put_str("[3] Demo Dialogue", 7, 0);
+                        self.vga.set_cursor(12, 25);
+                        self.vga.put_str("[L] Language: English", 8, 0);
+                        self.vga.set_cursor(14, 25);
+                        self.vga.put_str("v0.1.0  |  Press 1-3 or click", 8, 0);
+                    }
                 }
-                self.vga.set_cursor(14, 25);
-                self.vga.put_str("v0.1.0  |  Click or press 1-3", 8, 0);
 
                 // Menu input
                 if is_key_pressed(KeyCode::Key1) || (is_mouse_button_pressed(MouseButton::Left) && self.vga.cursor_row >= 8 && self.vga.cursor_row <= 10) {
@@ -442,21 +455,42 @@ impl Game {
             AppState::Room => {
                 // Draw room scene (full window)
                 self.room.draw();
-                // Draw tooltip for hovered object
+                // Draw tooltip for hovered object — bilingual
                 if let Some(ref obj_id) = self.room.hovered_id {
                     let (mx, my) = mouse_position();
-                    let label = match obj_id.as_str() {
-                        "monitor" => "CRT Monitor",
-                        "keyboard" => "Keyboard",
-                        "bookshelf" => "Bookshelf",
-                        "window" => "Window",
-                        "drawer" => "Drawer",
-                        "lamp" => "Desk Lamp",
-                        "telephone" => "Telephone",
-                        "calendar" => "Calendar",
+                    let label = match (obj_id.as_str(), self.language) {
+                        ("monitor", Language::Chinese) => "CRT 显示器 — 点击进入 DOS",
+                        ("monitor", Language::English) => "CRT Monitor — Click to enter DOS",
+                        ("keyboard", Language::Chinese) => "键盘",
+                        ("keyboard", Language::English) => "Keyboard",
+                        ("bookshelf", Language::Chinese) => "书架 — 外公的录音带",
+                        ("bookshelf", Language::English) => "Bookshelf — Grandpa's tapes",
+                        ("window", Language::Chinese) => "窗户 — 张阿姨家",
+                        ("window", Language::English) => "Window — Aunt Zhang's house",
+                        ("drawer", Language::Chinese) => "抽屉 — 软盘 DISK_01",
+                        ("drawer", Language::English) => "Drawer — Floppy DISK_01",
+                        ("lamp", Language::Chinese) => "台灯",
+                        ("lamp", Language::English) => "Desk Lamp",
+                        ("telephone", Language::Chinese) => "电话 — 李德胜来电",
+                        ("telephone", Language::English) => "Telephone — Li Desheng's call",
+                        ("calendar", Language::Chinese) => "日历 — 1998 年",
+                        ("calendar", Language::English) => "Calendar — Year 1998",
+                        ("poster", Language::Chinese) => "海报 — 辛巳游戏工作室",
+                        ("poster", Language::English) => "Poster — Xinsi Game Studio",
+                        ("notebook", Language::Chinese) => "笔记本 — 外公的笔记",
+                        ("notebook", Language::English) => "Notebook — Grandpa's notes",
+                        ("floppy_box", Language::Chinese) => "软盘盒 — DISK_02",
+                        ("floppy_box", Language::English) => "Floppy Box — DISK_02",
+                        ("cabinet", Language::Chinese) => "柜子 — 录音带收藏",
+                        ("cabinet", Language::English) => "Cabinet — Tape collection",
                         _ => "",
                     };
-                    draw_text(label, mx + 10.0, my - 5.0, 16.0, Color::new(1.0, 1.0, 0.8, 0.9));
+                    draw_text_ex(label, mx + 10.0, my - 5.0, TextParams {
+                        font: Some(&self.font_cjk),
+                        font_size: 16,
+                        color: Color::new(1.0, 1.0, 0.8, 0.9),
+                        ..Default::default()
+                    });
                 }
             }
             AppState::Dialogue => {
@@ -491,18 +525,42 @@ impl Game {
         };
         draw_text(lang_text, 10.0, 20.0, 20.0, Color::new(0.5, 0.5, 0.5, 1.0));
 
-        // HUD hints (use CJK font)
+        // HUD hints — bilingual and complete
         let hint_params = TextParams {
             font: Some(&self.font_cjk),
             font_size: 16,
             color: Color::new(0.4, 0.4, 0.4, 1.0),
             ..Default::default()
         };
-        draw_text_ex("[L] Language  [D] Demo Dialogue", 10.0, screen_height() - 10.0, hint_params);
 
-        // Show collected items and task progress
+        // State-specific hints
+        let hints = match (self.state, self.language) {
+            (AppState::PoweredOff, Language::Chinese) =>
+                "[1] 新游戏  [2] 继续  [3] 演示对话  [L] 语言".to_string(),
+            (AppState::PoweredOff, Language::English) =>
+                "[1] New Game  [2] Continue  [3] Demo  [L] Language".to_string(),
+            (AppState::DosCli, Language::Chinese) =>
+                "[R] 房间  [F5] 存档  [F9] 读档  [HELP] 命令  [L] 语言  [D] 对话".to_string(),
+            (AppState::DosCli, Language::English) =>
+                "[R] Room  [F5] Save  [F9] Load  [HELP] Commands  [L] Lang  [D] Dialogue".to_string(),
+            (AppState::Room, Language::Chinese) =>
+                "点击物体交互  [Escape] 返回 DOS  [L] 语言".to_string(),
+            (AppState::Room, Language::English) =>
+                "Click objects to interact  [Escape] Back to DOS  [L] Language".to_string(),
+            (AppState::Dialogue, Language::Chinese) =>
+                "[Enter/Space] 继续  [Escape] 跳过  [L] 语言".to_string(),
+            (AppState::Dialogue, Language::English) =>
+                "[Enter/Space] Continue  [Escape] Skip  [L] Language".to_string(),
+            _ => "[L] Language".to_string(),
+        };
+        draw_text_ex(&hints, 10.0, screen_height() - 10.0, hint_params);
+
+        // Show collected items
         if !self.tasks.floppies_collected.is_empty() {
-            let items = format!("Floppies: {}", self.tasks.floppies_collected.join(", "));
+            let items = match self.language {
+                Language::Chinese => format!("软盘: {}", self.tasks.floppies_collected.join(", ")),
+                Language::English => format!("Floppies: {}", self.tasks.floppies_collected.join(", ")),
+            };
             let item_params = TextParams {
                 font: Some(&self.font_cjk),
                 font_size: 16,
@@ -510,16 +568,6 @@ impl Game {
                 ..Default::default()
             };
             draw_text_ex(&items, 10.0, 40.0, item_params);
-        }
-        // Show active tasks hint in DOS mode
-        if self.state == AppState::DosCli {
-            let dos_hints = TextParams {
-                font: Some(&self.font_cjk),
-                font_size: 16,
-                color: Color::new(0.4, 0.4, 0.4, 1.0),
-                ..Default::default()
-            };
-            draw_text_ex("[R] Room  [F5] Save  [F9] Load  [HELP] Commands", 10.0, screen_height() - 30.0, dos_hints);
         }
     }
 
