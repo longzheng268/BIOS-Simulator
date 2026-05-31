@@ -121,13 +121,55 @@ impl Game {
         match self.state {
             AppState::PoweredOff => {
                 self.vga.clear(0, 0);
+                // Title
+                self.vga.set_cursor(4, 22);
+                self.vga.put_str("x86 BIOS Simulator", 15, 0);
+                self.vga.set_cursor(5, 22);
+                self.vga.put_str("==================", 8, 0);
+                // Menu
+                self.vga.set_cursor(8, 25);
+                self.vga.put_str("[1] New Game", 7, 0);
+                self.vga.set_cursor(9, 25);
+                self.vga.put_str("[2] Continue", 7, 0);
+                self.vga.set_cursor(10, 25);
+                self.vga.put_str("[3] Demo Dialogue", 7, 0);
                 self.vga.set_cursor(12, 25);
-                self.vga.put_str("[ Click to Power On | D: Demo Dialogue ]", 8, 0);
+                self.vga.put_str("[L] Language: ", 8, 0);
+                match self.language {
+                    Language::Chinese => self.vga.put_str("Chinese", 14, 0),
+                    Language::English => self.vga.put_str("English", 14, 0),
+                }
+                self.vga.set_cursor(14, 25);
+                self.vga.put_str("v0.1.0  |  Click or press 1-3", 8, 0);
 
-                if is_mouse_button_pressed(MouseButton::Left) {
+                // Menu input
+                if is_key_pressed(KeyCode::Key1) || (is_mouse_button_pressed(MouseButton::Left) && self.vga.cursor_row >= 8 && self.vga.cursor_row <= 10) {
                     self.state = AppState::Post;
                     self.post_progress = 0;
                     self.vga.clear(7, 0);
+                }
+                if is_key_pressed(KeyCode::Key2) {
+                    // Continue — load save slot 0
+                    if let Some(save) = self.saves.load(0) {
+                        self.play_time = save.play_time_secs as f64;
+                        self.language = match save.language.as_str() {
+                            "English" => Language::English,
+                            _ => Language::Chinese,
+                        };
+                        self.tasks.current_chapter = save.current_chapter;
+                        self.state = AppState::DosCli;
+                        self.setup_dos_cli();
+                    } else {
+                        // No save — start new game
+                        self.state = AppState::Post;
+                        self.post_progress = 0;
+                        self.vga.clear(7, 0);
+                    }
+                }
+                if is_key_pressed(KeyCode::Key3) || is_key_pressed(KeyCode::D) {
+                    self.dialogue.start_chapter("chapter_1_player_monologue");
+                    self.play_current_dialogue_audio();
+                    self.state = AppState::Dialogue;
                 }
             }
             AppState::Post => {
@@ -158,6 +200,49 @@ impl Game {
                 // Press R to enter room exploration
                 if is_key_pressed(KeyCode::R) {
                     self.state = AppState::Room;
+                }
+                // F5 = Quick save
+                if is_key_pressed(KeyCode::F5) {
+                    use game::save::SaveData;
+                    let mut data = SaveData::new(0);
+                    data.current_chapter = self.tasks.current_chapter;
+                    data.play_time_secs = self.play_time as u64;
+                    data.language = format!("{:?}", self.language);
+                    data.floppies_collected = self.tasks.floppies_collected.clone();
+                    data.knowledge_cards = self.tasks.knowledge_cards.clone();
+                    data.dos_current_dir = self.dos.current_dir.clone();
+                    match self.saves.save(data) {
+                        Ok(()) => {
+                            self.vga.newline();
+                            self.vga.put_str("[Saved to slot 1]", 10, 0);
+                            self.vga.newline();
+                            self.dos.print_prompt(&mut self.vga);
+                        }
+                        Err(e) => {
+                            self.vga.newline();
+                            self.vga.put_str(&format!("[Save failed: {}]", e), 12, 0);
+                            self.vga.newline();
+                            self.dos.print_prompt(&mut self.vga);
+                        }
+                    }
+                }
+                // F9 = Quick load
+                if is_key_pressed(KeyCode::F9) {
+                    if let Some(save) = self.saves.load(0) {
+                        self.play_time = save.play_time_secs as f64;
+                        self.tasks.current_chapter = save.current_chapter;
+                        self.tasks.floppies_collected = save.floppies_collected.clone();
+                        self.tasks.knowledge_cards = save.knowledge_cards.clone();
+                        self.vga.newline();
+                        self.vga.put_str("[Loaded from slot 1]", 10, 0);
+                        self.vga.newline();
+                        self.dos.print_prompt(&mut self.vga);
+                    } else {
+                        self.vga.newline();
+                        self.vga.put_str("[No save in slot 1]", 12, 0);
+                        self.vga.newline();
+                        self.dos.print_prompt(&mut self.vga);
+                    }
                 }
             }
             AppState::Room => {
