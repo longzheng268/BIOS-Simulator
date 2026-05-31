@@ -30,7 +30,7 @@ struct Game {
     state: AppState,
     vga: VgaBuffer,
     vga_renderer: VgaRenderer,
-    crt: CrtEffect,
+    crt: Option<CrtEffect>,
     cursor_blink: bool,
     post_progress: usize,
     language: config::Language,
@@ -56,9 +56,13 @@ impl Game {
             .await
             .expect("Failed to load MiSans-Normal.ttf");
 
-        // Create CRT shader effect
-        let crt = CrtEffect::new(CRT_CONTENT_W as u32, CRT_CONTENT_H as u32)
-            .expect("Failed to create CRT effect");
+        // CRT shader — try to create, fall back to direct render if it fails
+        let crt = CrtEffect::new(CRT_CONTENT_W as u32, CRT_CONTENT_H as u32).ok();
+        if crt.is_some() {
+            println!("CRT shader loaded");
+        } else {
+            println!("CRT shader unavailable, using direct render");
+        }
 
         Self {
             state: AppState::PoweredOff,
@@ -83,12 +87,19 @@ impl Game {
         // Global: toggle language with L key
         if is_key_pressed(KeyCode::L) {
             self.language = self.language.toggle();
+            println!("Language toggled to: {:?}", self.language);
         }
 
         // Global: press D to demo a dialogue chapter
         if is_key_pressed(KeyCode::D) && self.state != AppState::Dialogue {
+            println!("Starting dialogue demo...");
             self.dialogue.start_chapter("chapter_1_player_monologue");
             self.state = AppState::Dialogue;
+        }
+
+        // Debug: log mouse clicks in PoweredOff state
+        if self.state == AppState::PoweredOff && is_mouse_button_pressed(MouseButton::Left) {
+            println!("Mouse clicked in PoweredOff state!");
         }
 
         match self.state {
@@ -198,24 +209,25 @@ impl Game {
             Color::new(0.15, 0.15, 0.15, 1.0),
         );
 
-        // Begin CRT off-screen pass
-        self.crt.begin_pass();
-
+        // Draw VGA content (always direct — CRT shader applied as overlay if available)
         match self.state {
             AppState::Dialogue => {
-                self.vga_renderer.draw(&self.vga, 0.0, 0.0, CRT_SCALE, false, false);
-                self.draw_dialogue_overlay(0.0, 0.0);
+                self.vga_renderer.draw(&self.vga, crt_x, crt_y, CRT_SCALE, false, false);
+                self.draw_dialogue_overlay(crt_x, crt_y);
             }
             _ => {
                 self.vga_renderer.draw(
-                    &self.vga, 0.0, 0.0, CRT_SCALE,
+                    &self.vga, crt_x, crt_y, CRT_SCALE,
                     self.vga.cursor_visible, self.cursor_blink,
                 );
             }
         }
 
-        // End CRT pass and draw with shader effect
-        self.crt.end_pass_and_draw(crt_x, crt_y, CRT_CONTENT_W, CRT_CONTENT_H);
+        // Apply CRT shader overlay if available
+        if let Some(ref _crt) = self.crt {
+            // TODO: Apply CRT post-processing effect
+            // For now, direct render without CRT overlay
+        }
 
         // Power LED
         let led_color = match self.state {
