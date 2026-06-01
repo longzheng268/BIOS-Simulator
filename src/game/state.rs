@@ -25,6 +25,10 @@ pub struct DosState {
     pub command_buffer: String,
     pub history: Vec<String>,
     pub files_read: Vec<String>,
+    /// Floppy disks that have been collected — unlock new files
+    pub collected_floppies: Vec<String>,
+    /// Story flags that unlock content
+    pub flags: Vec<String>,
 }
 
 impl DosState {
@@ -34,7 +38,27 @@ impl DosState {
             command_buffer: String::new(),
             history: Vec::new(),
             files_read: Vec::new(),
+            collected_floppies: Vec::new(),
+            flags: Vec::new(),
         }
+    }
+
+    /// Add a collected floppy disk — unlocks new files in DIR
+    pub fn collect_floppy(&mut self, disk_id: &str) {
+        if !self.collected_floppies.contains(&disk_id.to_string()) {
+            self.collected_floppies.push(disk_id.to_string());
+        }
+    }
+
+    /// Set a story flag
+    pub fn set_flag(&mut self, flag: &str) {
+        if !self.flags.contains(&flag.to_string()) {
+            self.flags.push(flag.to_string());
+        }
+    }
+
+    pub fn has_flag(&self, flag: &str) -> bool {
+        self.flags.contains(&flag.to_string())
     }
 
     /// Process a typed character
@@ -80,7 +104,7 @@ impl DosState {
         let args = if parts.len() > 1 { parts[1].trim() } else { "" };
 
         match command.as_str() {
-            "DIR" => { cmd_dir(vga, args); CommandResult::Dir }
+            "DIR" => { cmd_dir(vga, &self.collected_floppies); CommandResult::Dir }
             "TYPE" => cmd_type(vga, args, &mut self.files_read),
             "CD" | "CHDIR" => { cmd_cd(vga, args); CommandResult::None }
             "CLS" => { vga.clear(7, 0); CommandResult::None }
@@ -96,12 +120,6 @@ impl DosState {
             "FDISK" => { cmd_fdisk(vga); CommandResult::DiscoverTask("learn_int13h".to_string()) }
             "TREE" => { cmd_tree(vga); CommandResult::None }
             "EXIT" => { CommandResult::ExitToRoom }
-            "CHOOSE" | "DECIDE" => {
-                vga.put_str("You face a critical decision.", 14, 0);
-                vga.newline();
-                vga.put_str("How do you handle the evidence?", 7, 0);
-                CommandResult::ShowBranch("branch_3".to_string())
-            }
             _ => {
                 vga.put_str("Bad command or file name", 7, 0);
                 CommandResult::None
@@ -112,7 +130,7 @@ impl DosState {
 
 // ─── DOS Commands ───
 
-fn cmd_dir(vga: &mut VgaBuffer, _args: &str) {
+fn cmd_dir(vga: &mut VgaBuffer, collected_floppies: &[String]) {
     vga.put_str(" Volume in drive C is GRANDPA", 7, 0);
     vga.newline();
     vga.put_str(" Volume Serial Number is 1998-0615", 7, 0);
@@ -121,7 +139,8 @@ fn cmd_dir(vga: &mut VgaBuffer, _args: &str) {
     vga.newline();
     vga.newline();
 
-    let files = vec![
+    // Base files always visible
+    let mut files: Vec<(&str, &str, &str, &str, &str)> = vec![
         ("README   ", "TXT", "1998", "06-15", "256"),
         ("LETTER   ", "TXT", "1998", "06-15", "1,024"),
         ("DIARY    ", "TXT", "1998", "08-03", "2,048"),
@@ -130,13 +149,34 @@ fn cmd_dir(vga: &mut VgaBuffer, _args: &str) {
         ("TOOLS    ", "EXE", "1998", "06-15", "8,192"),
     ];
 
-    for (name, ext, year, date, size) in files {
+    // Files unlocked by floppy collection
+    if collected_floppies.contains(&"DISK_01".to_string()) {
+        files.push(("LETTER2  ", "TXT", "1998", "07-20", "512"));
+    }
+    if collected_floppies.contains(&"DISK_02".to_string()) {
+        files.push(("PHOTOS   ", "DIR", "1998", "09-10", "<DIR>"));
+    }
+    if collected_floppies.contains(&"DISK_03".to_string()) {
+        files.push(("TAPE_LOG ", "TXT", "1998", "10-01", "1,024"));
+    }
+    if collected_floppies.contains(&"DISK_04".to_string()) {
+        files.push(("BANK_STMT", "CSV", "1998", "07-15", "2,048"));
+    }
+    if collected_floppies.contains(&"DISK_05".to_string()) {
+        files.push(("WITNESS  ", "TXT", "1998", "11-20", "768"));
+    }
+    if collected_floppies.contains(&"DISK_06".to_string()) {
+        files.push(("BLUEPRINT", "BIN", "1998", "06-15", "16,384"));
+    }
+
+    let count = files.len();
+    for (name, ext, year, date, size) in &files {
         vga.put_str(&format!("{} {}  {} {}  {}", name, ext, date, year, size), 7, 0);
         vga.newline();
     }
 
     vga.newline();
-    vga.put_str("        6 file(s)         16,128 bytes", 7, 0);
+    vga.put_str(&format!("        {} file(s)", count), 7, 0);
     vga.newline();
     vga.put_str("        0 dir(s)      1,457,664 bytes free", 7, 0);
 }
@@ -205,12 +245,27 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str, files_read: &mut Vec<String>) -
             }
         }
         "EVIDENCE.BIN" | "EVIDENCE" => {
-            vga.put_str("[ENCRYPTED DATA - DECRYPTION REQUIRED]", 4, 0);
-            vga.newline();
-            vga.put_str("Use DEBUG command to access INT 13h debugger.", 8, 0);
-            vga.newline();
-            vga.put_str("Read sectors 200-210 to decode this file.", 8, 0);
-            CommandResult::DiscoverTask("decrypt_evidence".to_string())
+            if files_read.contains(&"DEBUG".to_string()) || files_read.contains(&"BANK_STMT.CSV".to_string()) {
+                // Player has enough evidence — present the critical decision
+                vga.put_str("[EVIDENCE DECRYPTED]", 14, 0);
+                vga.newline();
+                vga.put_str("You now have proof of Li Desheng's crimes.", 7, 0);
+                vga.newline();
+                vga.put_str("$3,700,000 embezzled. Spyware disguised as research.", 7, 0);
+                vga.newline();
+                vga.put_str("Grandpa hid this for 20 years.", 7, 0);
+                vga.newline();
+                vga.newline();
+                vga.put_str("What do you do with the evidence?", 14, 0);
+                CommandResult::ShowBranch("branch_3".to_string())
+            } else {
+                vga.put_str("[ENCRYPTED DATA - DECRYPTION REQUIRED]", 4, 0);
+                vga.newline();
+                vga.put_str("Use DEBUG command to access INT 13h debugger.", 8, 0);
+                vga.newline();
+                vga.put_str("Collect more floppy disks to find the key.", 8, 0);
+                CommandResult::DiscoverTask("decrypt_evidence".to_string())
+            }
         }
         "FINAL.TXT" | "FINAL" => {
             vga.put_str("The investigation is over.", 7, 0);
@@ -229,13 +284,104 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str, files_read: &mut Vec<String>) -
                 file: "FINAL.TXT".to_string(),
             }
         }
+        "LETTER2.TXT" | "LETTER2" => {
+            vga.put_str("Dear child, part 2:", 7, 0);
+            vga.newline();
+            vga.put_str("If you found this, you found the first floppy.", 7, 0);
+            vga.newline();
+            vga.put_str("Li Desheng's network goes deeper than I thought.", 7, 0);
+            vga.newline();
+            vga.put_str("The bank records are on DISK_04.", 7, 0);
+            vga.newline();
+            vga.put_str("The witness testimony is on DISK_05.", 7, 0);
+            vga.newline();
+            vga.put_str("Collect them all. The truth needs all pieces.", 14, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_2_grandfather_voice".to_string(),
+                file: "LETTER2.TXT".to_string(),
+            }
+        }
+        "TAPE_LOG.TXT" | "TAPE_LOG" => {
+            vga.put_str("Tape Recording Log - Wang Zhiyuan", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 1: Joining Xinsi Game Studio (1986)", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 2: Time Capsule project origins", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 3: Discovering Li's true intentions", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 4: How to hide the evidence", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 5: Final words to family", 7, 0);
+            vga.newline();
+            vga.put_str("Tape 6: Behind the farewell video", 7, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_6_recordings".to_string(),
+                file: "TAPE_LOG.TXT".to_string(),
+            }
+        }
+        "BANK_STMT.CSV" | "BANK_STMT" => {
+            vga.put_str("Date,Amount,Recipient,Memo", 7, 0);
+            vga.newline();
+            vga.put_str("1998-07-15,3000000,Li Desheng,Consulting", 12, 0);
+            vga.newline();
+            vga.put_str("1998-08-01,500000,Unknown,Transfer", 12, 0);
+            vga.newline();
+            vga.put_str("1998-09-10,200000,Offshore,Cayman", 12, 0);
+            vga.newline();
+            vga.put_str("Total embezzled: $3,700,000", 14, 0);
+            CommandResult::CompleteTask("decrypt_evidence".to_string())
+        }
+        "WITNESS.TXT" | "WITNESS" => {
+            vga.put_str("Witness Statement - Zhang Minghua", 7, 0);
+            vga.newline();
+            vga.put_str("Former employee of Xinsi Game Studio.", 7, 0);
+            vga.newline();
+            vga.put_str("I saw Li Desheng transfer funds personally.", 7, 0);
+            vga.newline();
+            vga.put_str("The 'Time Capsule' was spyware, not research.", 7, 0);
+            vga.newline();
+            vga.put_str("Wang Zhiyuan tried to report it.", 7, 0);
+            vga.newline();
+            vga.put_str("Li's connections blocked the investigation.", 7, 0);
+            vga.newline();
+            vga.put_str("I am willing to testify in court.", 14, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_3_documents".to_string(),
+                file: "WITNESS.TXT".to_string(),
+            }
+        }
+        "BLUEPRINT.BIN" | "BLUEPRINT" => {
+            vga.put_str("[TIME CAPSULE SOURCE CODE - PARTIAL]", 14, 0);
+            vga.newline();
+            vga.put_str("Module: data_collection.asm", 7, 0);
+            vga.newline();
+            vga.put_str("  INT 21h - Access user files", 7, 0);
+            vga.newline();
+            vga.put_str("  INT 13h - Direct disk access", 7, 0);
+            vga.newline();
+            vga.put_str("  Camera/Microphone hooks found", 12, 0);
+            vga.newline();
+            vga.put_str("  Upload to: 192.168.x.x (overseas)", 12, 0);
+            vga.newline();
+            vga.put_str("This is spyware disguised as research.", 14, 0);
+            CommandResult::DiscoverTask("find_truth".to_string())
+        }
+        "PHOTOS" => {
+            vga.put_str("Accessing PHOTO directory...", 7, 0);
+            vga.newline();
+            vga.put_str("8 photo files found.", 7, 0);
+            CommandResult::ReadFile {
+                chapter: "chapter_7_photos".to_string(),
+                file: "PHOTOS".to_string(),
+            }
+        }
         _ => {
             vga.put_str("File not found", 7, 0);
             CommandResult::None
         }
     };
 
-    // Track which files have been read
     if !files_read.contains(&upper) {
         files_read.push(upper);
     }

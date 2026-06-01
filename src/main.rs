@@ -296,6 +296,7 @@ impl Game {
                                 self.tasks.discover("collect_disk_01");
                                 self.tasks.collect_floppy("DISK_01");
                                 self.tasks.complete("collect_disk_01");
+                                self.dos.collect_floppy("DISK_01");
                                 self.tutorial.on_find_floppy();
                                 // Show a brief message
                                 self.vga.clear(7, 0);
@@ -327,9 +328,9 @@ impl Game {
                                 self.state = AppState::DosCli;
                             }
                             "floppy_box" => {
-                                // Floppy box contains more disks
                                 if !self.tasks.floppies_collected.contains(&"DISK_02".to_string()) {
                                     self.tasks.collect_floppy("DISK_02");
+                                    self.dos.collect_floppy("DISK_02");
                                     self.vga.clear(7, 0);
                                     self.vga.set_cursor(12, 20);
                                     self.vga.put_str("Found: DISK_02 floppy disk!", 14, 0);
@@ -376,13 +377,14 @@ impl Game {
                                 };
                                 if !self.tasks.floppies_collected.contains(&disk_id.to_string()) {
                                     self.tasks.collect_floppy(disk_id);
+                                    self.dos.collect_floppy(disk_id); // Sync with DOS filesystem
                                     self.tutorial.on_find_floppy();
                                     self.vga.clear(7, 0);
-                                    self.vga.set_cursor(12, 20);
+                                    self.vga.set_cursor(12, 15);
                                     self.vga.put_str(&format!("Found: {} floppy disk!", disk_id), 14, 0);
                                     self.vga.newline();
-                                    self.vga.set_cursor(14, 20);
-                                    self.vga.put_str("Check it in DOS with DIR command.", 7, 0);
+                                    self.vga.set_cursor(14, 15);
+                                    self.vga.put_str("New files unlocked! Type DIR in DOS to see them.", 7, 0);
                                 } else {
                                     self.vga.clear(7, 0);
                                     self.vga.set_cursor(12, 25);
