@@ -63,11 +63,10 @@ src/
 assets/
 ├── fonts/            — MiSans CJK font, VGA bitmap font
 ├── shaders/          — CRT fragment shader
-└── disks/            — Virtual floppy disk images
+└── audio/            — Bilingual WAV files (9 chapters, 139 files)
 
 audio_gen/
-├── scripts/          — game_script.json (dialogue data)
-└── output/           — 140 bilingual WAV files
+└── scripts/          — game_script.json (dialogue data)
 ```
 
 ## License

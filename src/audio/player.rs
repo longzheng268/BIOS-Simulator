@@ -1,4 +1,4 @@
-// Audio player — loads and plays WAV files from audio_gen/output/
+// Audio player — loads and plays WAV files from assets/audio/
 //
 // Queue-based: call request_play() to queue a sound, then call update()
 // each frame to process the queue (async loading).
@@ -97,6 +97,6 @@ impl AudioPlayer {
             Language::Chinese => "zh",
             Language::English => "en",
         };
-        format!("audio_gen/output/{}/{}_{}.wav", chapter_key, segment_id, lang_suffix)
+        format!("assets/audio/{}/{}_{}.wav", chapter_key, segment_id, lang_suffix)
     }
 }

@@ -51,6 +51,8 @@ struct Game {
     audio: AudioPlayer,
     last_time: f64,
     font_cjk: Font,
+    /// Pending branch result to chain after a choice dialogue ends
+    pending_branch_result: Option<String>,
 }
 
 impl Game {
@@ -95,6 +97,7 @@ impl Game {
             audio: AudioPlayer::new(),
             last_time: macroquad::time::get_time(),
             font_cjk,
+            pending_branch_result: None,
         }
     }
 
@@ -355,18 +358,6 @@ impl Game {
                                 self.play_current_dialogue_audio();
                                 self.state = AppState::Dialogue;
                             }
-                            "poster" => {
-                                // Poster triggers documents about the company (chapter 3)
-                                self.dialogue.start_chapter("chapter_3_documents");
-                                self.play_current_dialogue_audio();
-                                self.state = AppState::Dialogue;
-                            }
-                            "notebook" => {
-                                self.tasks.discover("read_readme");
-                                self.dialogue.start_chapter("chapter_1_player_monologue");
-                                self.play_current_dialogue_audio();
-                                self.state = AppState::Dialogue;
-                            }
                             "floppy_03" | "floppy_04" | "floppy_05" | "floppy_06" => {
                                 let disk_id = match obj_id.as_str() {
                                     "floppy_03" => "DISK_03",
@@ -405,13 +396,50 @@ impl Game {
             AppState::Dialogue => {
                 self.dialogue.update(dt);
                 if is_key_pressed(KeyCode::Enter) || is_key_pressed(KeyCode::Space) {
+                    // Save segment ID before advance (chapter gets cleared when dialogue ends)
+                    let prev_seg_id = self.dialogue.current_segment_id();
                     self.dialogue.advance();
                     if self.dialogue.is_active {
                         self.play_current_dialogue_audio();
                     } else {
                         self.audio.stop();
-                        self.state = AppState::DosCli;
-                        self.setup_dos_cli();
+                        // Check for pending branch result to chain
+                        if let Some(result_id) = self.pending_branch_result.take() {
+                            // Start the result segment in chapter_9_branches
+                            self.dialogue.start_branch(&result_id);
+                            if self.dialogue.is_active {
+                                self.play_current_dialogue_audio();
+                                self.state = AppState::Dialogue;
+                                return;
+                            }
+                        }
+                        // Chain branch results to endings
+                        let ending = match prev_seg_id.as_deref() {
+                            Some("branch_3_result_a") => Some("ending_normal"),
+                            Some("branch_3_result_b") => Some("ending_hidden"),
+                            Some("branch_3_result_c") => Some("ending_easter"),
+                            _ => None,
+                        };
+                        if let Some(ending_seg) = ending {
+                            self.dialogue.start_chapter("chapter_8_endings");
+                            // Find the correct segment index
+                            if let Some(ref script) = self.dialogue.script {
+                                if let Some(ch) = script.chapters.get("chapter_8_endings") {
+                                    for (i, seg) in ch.segments.iter().enumerate() {
+                                        if seg.id == ending_seg {
+                                            self.dialogue.current_segment_index = i;
+                                            self.dialogue.start_current_segment();
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            self.play_current_dialogue_audio();
+                            self.state = AppState::Dialogue;
+                        } else {
+                            self.state = AppState::DosCli;
+                            self.setup_dos_cli();
+                        }
                     }
                 }
                 if is_key_pressed(KeyCode::Escape) {
@@ -435,8 +463,16 @@ impl Game {
 
                 if let Some((id, _)) = selection {
                     let id = id.clone();
+                    // For branch_3 choices, chain to result after choice text
+                    let result_id = if id.starts_with("branch_3_") {
+                        Some(format!("branch_3_result_{}", &id[id.len()-1..]))
+                    } else {
+                        None
+                    };
                     self.dialogue.start_branch(&id);
                     self.play_current_dialogue_audio();
+                    // Store pending result for chaining
+                    self.pending_branch_result = result_id;
                     self.state = AppState::Dialogue;
                 }
 
@@ -509,7 +545,21 @@ impl Game {
                     self.tasks.collect_floppy(&disk_id);
                 }
                 CommandResult::BadEnding => {
-                    // TODO: trigger bad ending scene
+                    // Trigger bad ending dialogue
+                    self.dialogue.start_chapter("chapter_8_endings");
+                    if let Some(ref script) = self.dialogue.script {
+                        if let Some(ch) = script.chapters.get("chapter_8_endings") {
+                            for (i, seg) in ch.segments.iter().enumerate() {
+                                if seg.id == "ending_bad" {
+                                    self.dialogue.current_segment_index = i;
+                                    self.dialogue.start_current_segment();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    self.audio.stop();
+                    self.state = AppState::Dialogue;
                 }
                 CommandResult::ExitToRoom => {
                     self.state = AppState::Room;
@@ -525,6 +575,23 @@ impl Game {
                             choices,
                         };
                     }
+                }
+                CommandResult::TriggerEnding(ending_id) => {
+                    self.dialogue.start_chapter("chapter_8_endings");
+                    // Find the correct ending segment
+                    if let Some(ref script) = self.dialogue.script {
+                        if let Some(ch) = script.chapters.get("chapter_8_endings") {
+                            for (i, seg) in ch.segments.iter().enumerate() {
+                                if seg.id == ending_id {
+                                    self.dialogue.current_segment_index = i;
+                                    self.dialogue.start_current_segment();
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    self.play_current_dialogue_audio();
+                    self.state = AppState::Dialogue;
                 }
                 CommandResult::None => {}
             }

@@ -17,6 +17,8 @@ pub enum CommandResult {
     ExitToRoom,
     /// Show a branch choice dialog
     ShowBranch(String),
+    /// Trigger a specific ending by segment ID
+    TriggerEnding(String),
 }
 
 /// Current DOS state
@@ -119,6 +121,8 @@ impl DosState {
             "DEBUG" => cmd_debug(vga),
             "FDISK" => { cmd_fdisk(vga); CommandResult::DiscoverTask("learn_int13h".to_string()) }
             "TREE" => { cmd_tree(vga); CommandResult::None }
+            "COLOR" => { cmd_color(vga, args); CommandResult::None }
+            "PROMPT" => { cmd_prompt(vga, args); CommandResult::None }
             "EXIT" => { CommandResult::ExitToRoom }
             _ => {
                 vga.put_str("Bad command or file name", 7, 0);
@@ -279,10 +283,8 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str, files_read: &mut Vec<String>) -
             vga.put_str("If someday my descendants find this...", 7, 0);
             vga.newline();
             vga.put_str("Please let the truth come to light.", 14, 0);
-            CommandResult::ReadFile {
-                chapter: "chapter_8_endings".to_string(),
-                file: "FINAL.TXT".to_string(),
-            }
+            // Use ending_normal — the standard good ending
+            CommandResult::TriggerEnding("ending_normal".to_string())
         }
         "LETTER2.TXT" | "LETTER2" => {
             vga.put_str("Dear child, part 2:", 7, 0);
@@ -376,6 +378,25 @@ fn cmd_type(vga: &mut VgaBuffer, filename: &str, files_read: &mut Vec<String>) -
                 file: "PHOTOS".to_string(),
             }
         }
+        "TOOLS.EXE" | "TOOLS" => {
+            vga.put_str("Grandpa's Toolkit v1.0", 14, 0);
+            vga.newline();
+            vga.put_str("========================", 8, 0);
+            vga.newline();
+            vga.put_str("Sector Scanner:  OK", 10, 0);
+            vga.newline();
+            vga.put_str("MBR Reader:      OK", 10, 0);
+            vga.newline();
+            vga.put_str("FAT12 Parser:    OK", 10, 0);
+            vga.newline();
+            vga.put_str("INT 13h Hook:    OK", 10, 0);
+            vga.newline();
+            vga.newline();
+            vga.put_str("Use DEBUG for disk inspection.", 7, 0);
+            vga.newline();
+            vga.put_str("Use FDISK for partition info.", 7, 0);
+            CommandResult::DiscoverTask("recover_sector_200".to_string())
+        }
         _ => {
             vga.put_str("File not found", 7, 0);
             CommandResult::None
@@ -461,8 +482,6 @@ fn cmd_format(vga: &mut VgaBuffer, args: &str) -> CommandResult {
         vga.put_str("You erased it with one command.", 7, 0);
         vga.newline();
         vga.put_str("Do not format C drive.", 14, 0);
-        vga.newline();
-        vga.put_str("Grandpa's last words. You didn't listen.", 8, 0);
         CommandResult::BadEnding
     } else {
         vga.put_str("Required parameter missing", 7, 0);
@@ -471,7 +490,6 @@ fn cmd_format(vga: &mut VgaBuffer, args: &str) -> CommandResult {
         CommandResult::None
     }
 }
-
 fn cmd_debug(vga: &mut VgaBuffer) -> CommandResult {
     vga.put_str("INT 13h Disk Debugger", 14, 0);
     vga.newline();
@@ -589,6 +607,7 @@ fn cmd_help(vga: &mut VgaBuffer) {
         ("FDISK", "Display partition info"),
         ("TREE", "Display directory tree"),
         ("COLOR", "Set console color"),
+        ("EXIT", "Return to room"),
         ("HELP", "Displays this help"),
     ];
 

@@ -577,6 +577,48 @@
           "text": "（记录下录音的内容到笔记本）",
           "text_en": "(Records the content of the recording in the notebook)",
           "context": "选择点8：李德胜第一次来电后 - 选项C"
+        },
+        {
+          "id": "branch_3_a",
+          "character": "player",
+          "text": "（把证据交给警方。这是外公等了 20 年的正义。）",
+          "text_en": "(Turn the evidence over to the police. This is the justice Grandpa waited 20 years for.)",
+          "context": "Player chooses to report to authorities"
+        },
+        {
+          "id": "branch_3_b",
+          "character": "player",
+          "text": "（直接去找李德胜对质。我要亲口听他承认。）",
+          "text_en": "(Confront Li Desheng directly. I want to hear him admit it to my face.)",
+          "context": "Player chooses to confront the villain"
+        },
+        {
+          "id": "branch_3_c",
+          "character": "player",
+          "text": "（把这些证据藏好。有些真相，也许不该被揭开。）",
+          "text_en": "(Hide the evidence again. Some truths are better left buried.)",
+          "context": "Player chooses to bury the truth"
+        },
+        {
+          "id": "branch_3_result_a",
+          "character": "narrator",
+          "text": "你拨通了举报电话。\n电话那头沉默了很久。\n\n\"王志远的案子？\"\n\"我们一直在等这些证据。\"\n\n三天后，李德胜被正式逮捕。\n外公等了 20 年的正义，终于到来。",
+          "text_en": "You dial the reporting hotline.\nSilence on the other end for a long time.\n\n\"The Wang Zhiyuan case?\"\n\"We've been waiting for this evidence.\"\n\nThree days later, Li Desheng is formally arrested.\nThe justice Grandpa waited 20 years for has finally arrived.",
+          "context": "Normal ending lead-in"
+        },
+        {
+          "id": "branch_3_result_b",
+          "character": "li_desheng",
+          "text": "（电话里传来一声叹息）\n\n\"你果然和你外公一样固执。\"\n\"你以为这些证据能扳倒我？\"\n\"20 年了，我早就洗白了。\"\n\"不过……\"\n（长久的沉默）\n\"算了吧。我累了。\"",
+          "text_en": "(A sigh comes through the phone)\n\n\"You're as stubborn as your grandfather.\"\n\"You think this evidence can take me down?\"\n\"It's been 20 years. I've cleaned up my act.\"\n\"But...\"\n(A long silence)\n\"Forget it. I'm tired.\"",
+          "context": "Confrontation ending lead-in"
+        },
+        {
+          "id": "branch_3_result_c",
+          "character": "player",
+          "text": "我把证据重新藏回了硬盘深处。\n关掉电脑，走出阁楼。\n\n有些事情，也许真的不该由我来揭开。\n外公藏了 20 年，也许他也在犹豫。\n\n但那天晚上，我做了一个梦。\n梦里外公对我说：\n\"没关系，孩子。你已经尽力了。\"",
+          "text_en": "I hide the evidence back deep in the hard drive.\nTurn off the computer and walk out of the attic.\n\nSome things perhaps shouldn't be uncovered by me.\nGrandpa hid them for 20 years — maybe he was unsure too.\n\nBut that night, I had a dream.\nIn the dream, Grandpa said to me:\n\"It's okay, child. You've done your best.\"",
+          "context": "Bury-the-truth ending lead-in"
         }
       ]
     }

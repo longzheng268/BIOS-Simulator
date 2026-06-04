@@ -1,7 +1,7 @@
 // Dialogue system — runtime dialogue engine
 //
 // Loads dialogue data from audio_gen/scripts/game_script.json
-// Audio files are in audio_gen/output/ (140 bilingual WAV files)
+// Audio files are in assets/audio/ (bilingual WAV files)
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -142,7 +142,7 @@ impl DialogueEngine {
                             Language::Chinese => "zh",
                             Language::English => "en",
                         };
-                        return Some(format!("audio_gen/output/{}/{}_{}.wav",
+                        return Some(format!("assets/audio/{}/{}_{}.wav",
                             chapter_key, segment.id, lang_suffix));
                     }
                 }
@@ -201,6 +201,20 @@ impl DialogueEngine {
         self.current_chapter = None;
     }
 
+    /// Get the current segment's ID (for tracking which segment just played)
+    pub fn current_segment_id(&self) -> Option<String> {
+        if let Some(ref script) = self.script {
+            if let Some(ref chapter_key) = self.current_chapter {
+                if let Some(chapter) = script.chapters.get(chapter_key) {
+                    if let Some(segment) = chapter.segments.get(self.current_segment_index) {
+                        return Some(segment.id.clone());
+                    }
+                }
+            }
+        }
+        None
+    }
+
     /// List available chapter keys
     pub fn chapter_keys(&self) -> Vec<String> {
         self.script.as_ref()
@@ -214,7 +228,12 @@ impl DialogueEngine {
         if let Some(ref script) = self.script {
             if let Some(chapter) = script.chapters.get("chapter_9_branches") {
                 for seg in &chapter.segments {
-                    if seg.id.starts_with(branch_prefix) && seg.id != branch_prefix {
+                    // Match direct choice segments (branch_X_a, branch_X_b, etc.)
+                    // but NOT result segments (branch_X_result_a, etc.)
+                    if seg.id.starts_with(branch_prefix) 
+                        && seg.id != branch_prefix 
+                        && !seg.id.contains("_result_") 
+                    {
                         let text = match lang {
                             Language::Chinese => seg.text.clone(),
                             Language::English => seg.text_en.clone(),
