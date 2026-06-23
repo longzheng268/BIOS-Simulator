@@ -632,7 +632,30 @@ impl Game {
         self.cursor_blink = ((now * 1000.0) as u64 / CURSOR_BLINK_MS % 2) == 0;
     }
 
-    /// Queue the audio file for the current dialogue segment
+    /// Show a hint after dialogue ends — guides player to next action
+    fn show_post_dialogue_hint(&mut self) {
+        self.setup_dos_cli();
+        let hint = match self.language {
+            config::Language::Chinese => {
+                if self.tasks.floppies_collected.len() < 2 {
+                    "对话结束。按 F3 进入房间收集更多软盘。"
+                } else {
+                    "对话结束。输入 DIR 查看新文件，TYPE 阅读。"
+                }
+            }
+            config::Language::English => {
+                if self.tasks.floppies_collected.len() < 2 {
+                    "Dialogue ended. Press F3 to explore the room for floppy disks."
+                } else {
+                    "Dialogue ended. Type DIR to see new files, TYPE to read."
+                }
+            }
+        };
+        self.vga.put_str(hint, 14, 0);
+        self.vga.newline();
+        self.vga.newline();
+        self.dos.print_prompt(&mut self.vga);
+    }
     fn play_current_dialogue_audio(&mut self) {
         if let Some(ref chapter_key) = self.dialogue.current_chapter {
             let ck = chapter_key.clone();
@@ -898,7 +921,7 @@ impl Game {
         let mut line = String::new();
         for word in display.split_inclusive(|c: char| c.is_whitespace()) {
             let test = format!("{}{}", line, word);
-            let measured = measure_text(&test, Some(&self.font_cjk), font_size as u16, 1.0);
+            let measured = measure_text(&test, self.font_cjk.as_ref(), font_size as u16, 1.0);
             if measured.width > max_w && !line.is_empty() {
                 draw_text_ex(&line, box_x + 16.0, line_y, text_params.clone());
                 line_y += font_size + 4.0;
