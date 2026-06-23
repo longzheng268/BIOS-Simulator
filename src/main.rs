@@ -50,7 +50,7 @@ struct Game {
     dialogue: DialogueEngine,
     audio: AudioPlayer,
     last_time: f64,
-    font_cjk: Font,
+    font_cjk: Option<Font>,
     /// Pending branch result to chain after a choice dialogue ends
     pending_branch_result: Option<String>,
 }
@@ -66,10 +66,28 @@ impl Game {
             Err(e) => eprintln!("Warning: Could not load dialogue: {}", e),
         }
 
-        // Load CJK font for dialogue text (Chinese + English)
-        let font_cjk = load_ttf_font("assets/fonts/MiSans-Normal.ttf")
-            .await
-            .expect("Failed to load MiSans-Normal.ttf");
+        // Load CJK font — try multiple paths
+        let font_cjk = {
+            let paths = [
+                "assets/fonts/MiSans-Normal.ttf",
+                "../assets/fonts/MiSans-Normal.ttf",
+                "../../assets/fonts/MiSans-Normal.ttf",
+            ];
+            let mut loaded = None;
+            for p in &paths {
+                if let Ok(f) = load_ttf_font(p).await {
+                    println!("CJK font loaded from: {}", p);
+                    loaded = Some(f);
+                    break;
+                }
+            }
+            if loaded.is_none() {
+                eprintln!("WARNING: CJK font not found! Chinese will show as boxes.");
+                eprintln!("Working dir: {:?}", std::env::current_dir());
+            }
+            // Font is used with Option<&Font> in draw calls
+            loaded
+        };
 
         // CRT shader — try to create, fall back to direct render if it fails
         let crt = CrtEffect::new(CRT_CONTENT_W as u32, CRT_CONTENT_H as u32).ok();
@@ -681,7 +699,7 @@ impl Game {
                         _ => "",
                     };
                     draw_text_ex(label, mx + 10.0, my - 5.0, TextParams {
-                        font: Some(&self.font_cjk),
+                        font: self.font_cjk.as_ref(),
                         font_size: 16,
                         color: Color::new(1.0, 1.0, 0.8, 0.9),
                         ..Default::default()
@@ -705,19 +723,19 @@ impl Game {
                 draw_rectangle_lines(box_x, box_y, box_w, box_h, 2.0, Color::new(0.3, 0.6, 1.0, 1.0));
 
                 let title_params = TextParams {
-                    font: Some(&self.font_cjk),
+                    font: self.font_cjk.as_ref(),
                     font_size: 20,
                     color: Color::new(0.3, 0.8, 1.0, 1.0),
                     ..Default::default()
                 };
                 let choice_params = TextParams {
-                    font: Some(&self.font_cjk),
+                    font: self.font_cjk.as_ref(),
                     font_size: 18,
                     color: WHITE,
                     ..Default::default()
                 };
                 let hint_params = TextParams {
-                    font: Some(&self.font_cjk),
+                    font: self.font_cjk.as_ref(),
                     font_size: 14,
                     color: Color::new(0.5, 0.5, 0.5, 1.0),
                     ..Default::default()
@@ -748,13 +766,13 @@ impl Game {
         // CJK overlay for title menu (VGA can't render Chinese)
         if self.state == AppState::PoweredOff && self.language == Language::Chinese {
             let menu_params = TextParams {
-                font: Some(&self.font_cjk),
+                font: self.font_cjk.as_ref(),
                 font_size: 20,
                 color: Color::new(1.0, 1.0, 1.0, 1.0),
                 ..Default::default()
             };
             let hint_cjk = TextParams {
-                font: Some(&self.font_cjk),
+                font: self.font_cjk.as_ref(),
                 font_size: 16,
                 color: Color::new(0.5, 0.5, 0.5, 1.0),
                 ..Default::default()
@@ -792,7 +810,7 @@ impl Game {
 
         // HUD hints — bilingual and complete
         let hint_params = TextParams {
-            font: Some(&self.font_cjk),
+            font: self.font_cjk.as_ref(),
             font_size: 16,
             color: Color::new(0.4, 0.4, 0.4, 1.0),
             ..Default::default()
@@ -827,7 +845,7 @@ impl Game {
                 Language::English => format!("Floppies: {}", self.tasks.floppies_collected.join(", ")),
             };
             let item_params = TextParams {
-                font: Some(&self.font_cjk),
+                font: self.font_cjk.as_ref(),
                 font_size: 16,
                 color: Color::new(0.4, 0.4, 0.4, 1.0),
                 ..Default::default()
@@ -848,19 +866,19 @@ impl Game {
 
         // CJK font params
         let name_params = TextParams {
-            font: Some(&self.font_cjk),
+            font: self.font_cjk.as_ref(),
             font_size: 20,
             color: Color::new(0.3, 0.8, 1.0, 1.0),
             ..Default::default()
         };
         let text_params = TextParams {
-            font: Some(&self.font_cjk),
+            font: self.font_cjk.as_ref(),
             font_size: 18,
             color: WHITE,
             ..Default::default()
         };
         let hint_params = TextParams {
-            font: Some(&self.font_cjk),
+            font: self.font_cjk.as_ref(),
             font_size: 16,
             color: Color::new(0.3, 0.6, 1.0, 1.0),
             ..Default::default()
