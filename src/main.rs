@@ -13,10 +13,10 @@ use render::vga::{VgaBuffer, VgaRenderer};
 use render::crt::CrtEffect;
 use render::room::Room;
 use game::dialogue::DialogueEngine;
-use game::state::{DosState, CommandResult};
+use game::state::DosState;
 use game::task::TaskSystem;
 use game::save::SaveManager;
-use game::tutorial::{Tutorial, TutorialStep};
+use game::tutorial::Tutorial;
 use audio::player::AudioPlayer;
 
 /// Game application states

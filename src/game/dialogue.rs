@@ -87,7 +87,7 @@ impl DialogueEngine {
         }
     }
 
-    fn start_current_segment(&mut self) {
+    pub fn start_current_segment(&mut self) {
         if let Some(ref script) = self.script {
             if let Some(ref chapter_key) = self.current_chapter {
                 if let Some(chapter) = script.chapters.get(chapter_key) {
