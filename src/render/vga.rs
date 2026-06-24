@@ -165,37 +165,36 @@ impl VgaRenderer {
         Self {}
     }
 
-    /// Render the VGA buffer to the screen.
-    /// `x`, `y` = top-left pixel position of the VGA display area
-    /// `scale` = pixel scale factor (2x = each VGA pixel becomes 2x2 screen pixels)
+    /// Render VGA buffer — optimized: single background fill, skip empty cells
     pub fn draw(&self, buffer: &VgaBuffer, x: f32, y: f32, scale: f32, show_cursor: bool, cursor_blink_on: bool) {
         let cw = CHAR_WIDTH * scale;
         let ch = CHAR_HEIGHT * scale;
 
+        // Full background
+        draw_rectangle(x, y, VGA_COLS as f32 * cw, VGA_ROWS as f32 * ch, palette_color(0));
+
         for row in 0..VGA_ROWS {
             for col in 0..VGA_COLS {
                 let cell = buffer.cells[row][col];
+                if cell.ch == b' ' && cell.bg == 0 { continue; }
+
                 let px = x + col as f32 * cw;
                 let py = y + row as f32 * ch;
 
-                // Draw background
-                let bg_color = palette_color(cell.bg);
-                draw_rectangle(px, py, cw, ch, bg_color);
-
-                // Draw character pixels
-                let fg_color = palette_color(cell.fg);
-                self.draw_char_glyph(cell.ch, px, py, scale, fg_color);
+                if cell.bg != 0 {
+                    draw_rectangle(px, py, cw, ch, palette_color(cell.bg));
+                }
+                if cell.ch != b' ' {
+                    self.draw_char_glyph(cell.ch, px, py, scale, palette_color(cell.fg));
+                }
             }
         }
 
-        // Draw cursor
+        // Cursor
         if show_cursor && cursor_blink_on {
             let cx = x + buffer.cursor_col as f32 * cw;
             let cy = y + buffer.cursor_row as f32 * ch;
-            // Cursor is typically the bottom 2 rows of the character cell
-            let cursor_h = 2.0 * scale;
-            let cursor_y = cy + ch - cursor_h;
-            draw_rectangle(cx, cursor_y, cw, cursor_h, palette_color(7)); // White cursor
+            draw_rectangle(cx, cy + ch - 2.0 * scale, cw, 2.0 * scale, palette_color(7));
         }
     }
 
@@ -204,10 +203,13 @@ impl VgaRenderer {
         let font_data = get_char_bitmap(ch);
         for row in 0..16u8 {
             let byte = font_data[row as usize];
+            if byte == 0 { continue; }
             for bit in 0..8u8 {
                 if byte & (0x80 >> bit) != 0 {
-                    let px = x + bit as f32 * scale;
-                    let py = y + row as f32 * scale;
+                    draw_rectangle(x + bit as f32 * scale, y + row as f32 * scale, scale, scale, color);
+                }
+            }
+        }
                     draw_rectangle(px, py, scale, scale, color);
                 }
             }
